@@ -1,0 +1,220 @@
+Interface Design Specification: Nexa
+
+Version: 1.0
+Design Philosophy: "Apple Minimalist" – Clean, Neutral, Data-First.
+Target Output: Pixel-perfect implementation using Tailwind CSS 4 + shadcn/ui.
+
+1. Design Principles
+
+Reduction: If a border, shadow, or label isn't critical, remove it. Use whitespace to separate content instead of lines.
+
+Softness: Heavy use of rounded corners (rounded-2xl or rounded-3xl) and super-soft, diffused shadows to create depth without clutter.
+
+Data as Art: Charts and numbers are the heroes. They should be large, legible, and use distinct accent colors against a neutral background.
+
+2. Color System (Tailwind Variables)
+
+2.1 Primary Brand Colors
+
+Based on the "Nexa" branding and Blue primary buttons.
+
+Primary (Nexa Blue): #007AFF (Apple Blue) or #2563EB (Tailwind Blue-600). Used for Primary Buttons and Active States.
+
+Primary Foreground: #FFFFFF (White).
+
+Dark Brand (Sidebar/Logo): #0F172A (Slate 900) or #1E293B (Slate 800) for high-contrast headers.
+
+2.2 Semantic Colors (Financial)
+
+Income/Positive (Growth): #10B981 (Emerald 500) – See Spending Chart in Image 2.
+
+Expense/Negative: #EF4444 (Red 500).
+
+Budget Categories (Gradient Palette):
+
+Housing: #8B5CF6 (Purple 500)
+
+Food: #F97316 (Orange 500)
+
+Entertainment: #EC4899 (Pink 500)
+
+Shopping: #06B6D4 (Cyan 500)
+
+2.3 Neutrals (The "Apple" Look)
+
+Background: #F5F5F7 (Apple Light Gray) - Crucial for the dashboard background.
+
+Surface (Cards): #FFFFFF (Pure White).
+
+Text Main: #111827 (Gray 900).
+
+Text Muted: #6B7280 (Gray 500) – Used for labels like "from Last Month".
+
+Borders: #E5E7EB (Gray 200) – Subtle division.
+
+3. Typography
+
+Font Family: Inter (Standard) or SF Pro Display (if available via license).
+Hierarchy:
+
+H1 (Total Balance): text-4xl font-bold tracking-tight text-gray-900.
+
+H2 (Section Headers): text-lg font-semibold text-gray-900.
+
+Body: text-sm text-gray-600 for table rows.
+
+Label: text-xs font-medium text-gray-500 uppercase tracking-wider.
+
+4. Component Library Specifications
+
+4.1 Cards (The Core Container)
+
+Style: Pure white background on the light gray app background.
+
+Border: None or extremely subtle (border border-gray-100).
+
+Shadow: shadow-sm (Tailwind) or custom: 0px 4px 20px rgba(0, 0, 0, 0.03).
+
+Radius: rounded-2xl (approx 16px).
+
+Padding: p-6 (24px).
+
+4.2 Buttons
+
+Primary (The "Send" Button in mockups):
+
+Solid Blue (bg-blue-600).
+
+Full pill shape or rounded-xl.
+
+Height: h-10 or h-12.
+
+Text: White, semi-bold.
+
+Secondary (The "Record" Button):
+
+White background, Gray border (border-gray-200).
+
+Text: Gray 900.
+
+Hover: bg-gray-50.
+
+Icon Buttons: Circular p-2 hover:bg-gray-100 rounded-full.
+
+4.3 Navigation (Sidebar)
+
+Container: White or very light gray (w-64).
+
+Item State:
+
+Inactive: Text Gray-500, Icon Gray-400.
+
+Active: Text Blue-600, Icon Blue-600, Background bg-blue-50.
+
+Indicator: A small vertical pill/line on the left for the active tab (optional, see Image 3).
+
+Logo: Top left, large "Nexa" text, clean sans-serif.
+
+5. Visualizations & Widgets (From Mockups)
+
+5.1 The "Budget Tracker" (Image 4)
+
+This is a signature UI element.
+
+Structure: A "segmented" progress bar rather than a solid line.
+
+Implementation: Flex row of 40-50 small div elements (pills).
+
+Coloring:
+
+First 40% pills: Orange (Food).
+
+Next 20% pills: Pink (Entertainment).
+
+Next 10% pills: Purple (Housing).
+
+Remaining: Gray (Unspent).
+
+Labeling: Legend below the bar showing Category Name • Amount • Percentage (aligned right).
+
+5.2 The "Spending Wave" (Image 2)
+
+Chart: Smooth spline Area Chart.
+
+Line Color: Emerald Green (#10B981).
+
+Fill: Gradient from Emerald-500 (opacity 0.2) to Transparent.
+
+Grid: Dotted grid lines (stroke-dasharray="3 3"), extremely light gray.
+
+Tooltip: Floating white card with soft shadow, showing precise date and amount.
+
+5.3 Recent Activity Table
+
+Header: Hidden or minimal gray text.
+
+Rows: Large height (h-16), vertical alignment center.
+
+Avatars: Category icons (e.g., Coffee cup for Food) inside a bg-orange-100 text-orange-600 rounded square.
+
+Amounts:
+
+Expenses: - $5.00 (Red/Pink text).
+
+Income: + $2,489.00 (Green text).
+
+6. Layout Specs
+
+6.1 Dashboard Grid (Desktop)
+
+Top Row:
+
+Left: Total Balance Card (Large, prominent).
+
+Right: Budget Tracker (Wide).
+
+Middle Row:
+
+Full width Spending Chart.
+
+Bottom Row:
+
+Left: Account Cards (Wallet, Savings).
+
+Right: Recent Activity List.
+
+6.2 Mobile Responsiveness (PWA)
+
+Sidebar: Becomes a Bottom Tab Bar or Hamburger Menu.
+
+Cards: Stack vertically (w-full).
+
+Charts: Horizontal scroll container for wide charts, or simplified "Sparkline" views.
+
+Input: "Add Transaction" becomes a Floating Action Button (FAB) bottom right, fixed position.
+
+7. Iconography
+
+Set: lucide-react.
+
+Style: Stroke width 1.5px or 2px (Fine lines).
+
+Specific Icons:
+
+Dashboard: LayoutGrid
+
+Wallet: Wallet
+
+Transactions: CreditCard
+
+Budget: PieChart or BookOpen
+
+Settings: Settings (Cog)
+
+8. UX Interactions
+
+Hover: Cards should lift slightly (-translate-y-1) on hover for clickable items.
+
+Feedback: Clicking "Save" triggers a toast notification (bottom right).
+
+Loading: Skeleton screens (gray pulsing shapes) instead of spinners for data loading.
