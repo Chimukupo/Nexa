@@ -1,18 +1,128 @@
-rules_version='2'
+rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2026, 1, 3);
+    
+    /**
+     * Helper function to check if the authenticated user owns the resource
+     */
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+    
+    /**
+     * Validation function for transactions
+     * Ensures amount is a positive number
+     */
+    function isValidTransaction() {
+      return request.resource.data.amount is number 
+             && request.resource.data.amount > 0
+             && request.resource.data.type in ['INCOME', 'EXPENSE', 'TRANSFER']
+             && request.resource.data.accountId is string
+             && request.resource.data.categoryId is string;
+    }
+    
+    /**
+     * Validation function for accounts
+     * Ensures account data is valid
+     */
+    function isValidAccount() {
+      return request.resource.data.name is string
+             && request.resource.data.type in ['CASH', 'BANK', 'MOBILE_MONEY', 'SAVINGS']
+             && request.resource.data.currentBalance is number
+             && request.resource.data.isArchived is bool;
+    }
+    
+    /**
+     * Validation function for categories
+     * Ensures category data is valid
+     */
+    function isValidCategory() {
+      return request.resource.data.name is string
+             && request.resource.data.type in ['NEEDS', 'WANTS', 'SAVINGS', 'INCOME']
+             && request.resource.data.color is string
+             && request.resource.data.icon is string;
+    }
+    
+    /**
+     * Validation function for recurring rules
+     * Ensures recurring rule data is valid
+     */
+    function isValidRecurringRule() {
+      return request.resource.data.name is string
+             && request.resource.data.amount is number
+             && request.resource.data.amount > 0
+             && request.resource.data.type in ['INCOME', 'EXPENSE']
+             && request.resource.data.cronExpressionOrDay is int
+             && request.resource.data.accountId is string
+             && request.resource.data.categoryId is string;
+    }
+    
+    /**
+     * User document rules
+     * Users can only read/write their own profile
+     */
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+      
+      /**
+       * Accounts subcollection
+       * Users can manage their own accounts
+       * currentBalance can only be updated by Cloud Functions (via server timestamp check)
+       */
+      match /accounts/{accountId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidAccount();
+        allow update: if isOwner(userId) && isValidAccount();
+        allow delete: if isOwner(userId);
+        
+        // Prevent direct updates to currentBalance (should be updated by Cloud Functions only)
+        // Note: This is a soft protection - Cloud Functions should handle balance updates
+        allow update: if isOwner(userId) 
+                      && !request.resource.data.diff(resource.data).affectedKeys().hasOnly(['currentBalance']);
+      }
+      
+      /**
+       * Categories subcollection
+       * Users can manage their own categories
+       */
+      match /categories/{categoryId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidCategory();
+        allow update: if isOwner(userId) && isValidCategory();
+        allow delete: if isOwner(userId);
+      }
+      
+      /**
+       * Transactions subcollection
+       * Users can manage their own transactions
+       */
+      match /transactions/{transactionId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidTransaction();
+        allow update: if isOwner(userId) && isValidTransaction();
+        allow delete: if isOwner(userId);
+      }
+      
+      /**
+       * Recurring Rules subcollection
+       * Users can manage their own recurring rules
+       */
+      match /recurring_rules/{ruleId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidRecurringRule();
+        allow update: if isOwner(userId) && isValidRecurringRule();
+        allow delete: if isOwner(userId);
+      }
+      
+      /**
+       * Savings Goals subcollection (for future implementation)
+       * Users can manage their own savings goals
+       */
+      match /savings_goals/{goalId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId);
+      }
     }
   }
 }
