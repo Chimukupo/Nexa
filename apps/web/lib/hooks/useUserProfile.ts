@@ -4,7 +4,6 @@ import { getUserDoc } from "@/lib/firebase/collections";
 import { getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { userKeys } from "@/lib/queries/keys";
 import { UserProfile, UserProfileSchema } from "@workspace/validators";
-import { z } from "zod";
 
 export function useUserProfile() {
   const { user } = useAuth();
@@ -34,7 +33,7 @@ export function useCreateUserProfile() {
       await setDoc(ref, validData);
       return validData;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       if (user?.uid) {
         queryClient.invalidateQueries({ queryKey: userKeys.detail(user.uid) });
         // Also invalidate 'all' users if that's ever used (unlikely for this app)

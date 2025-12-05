@@ -156,7 +156,7 @@ export default function OnboardingPage() {
             {FISCAL_TYPES.map((type) => (
               <button
                 key={type.value}
-                onClick={() => setFiscalType(type.value as any)}
+                onClick={() => setFiscalType(type.value as "SALARIED" | "FREELANCE")}
                 className={cn(
                   "flex items-start gap-4 rounded-xl border p-4 text-left transition-all",
                   fiscalType === type.value

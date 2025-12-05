@@ -40,15 +40,21 @@ export default function SignupPage() {
       await signUpWithEmail(data.email, data.password);
       // TODO: Update user profile with name
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Signup error:", error);
-      if (error.code === "auth/email-already-in-use") {
-        setError("email", { 
-          message: "Email already in use" 
+
+      const firebaseCode =
+        typeof error === "object" && error !== null && "code" in error
+          ? (error as { code?: string }).code
+          : undefined;
+
+      if (firebaseCode === "auth/email-already-in-use") {
+        setError("email", {
+          message: "Email already in use",
         });
       } else {
-        setError("root", { 
-          message: "An error occurred. Please try again." 
+        setError("root", {
+          message: "An error occurred. Please try again.",
         });
       }
     }

@@ -2,12 +2,13 @@
 
 import React from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { Checkbox } from "@workspace/ui/components/checkbox";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -26,6 +27,7 @@ export default function LoginPage() {
     register,
     handleSubmit,
     setError,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -38,16 +40,25 @@ export default function LoginPage() {
     try {
       await signInWithEmail(data.email, data.password);
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Login error:", error);
-      // Map Firebase errors to form errors
-      if (error.code === "auth/invalid-credential" || error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
-        setError("root", { 
-          message: "Invalid email or password" 
+
+      const firebaseCode =
+        typeof error === "object" && error !== null && "code" in error
+          ? (error as { code?: string }).code
+          : undefined;
+
+      if (
+        firebaseCode === "auth/invalid-credential" ||
+        firebaseCode === "auth/user-not-found" ||
+        firebaseCode === "auth/wrong-password"
+      ) {
+        setError("root", {
+          message: "Invalid email or password",
         });
       } else {
-        setError("root", { 
-          message: "An error occurred. Please try again." 
+        setError("root", {
+          message: "An error occurred. Please try again.",
         });
       }
     }
@@ -128,14 +139,22 @@ export default function LoginPage() {
 
         {/* Remember Me & Forgot Password */}
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm text-gray-600">
-            <input
-              {...register("rememberMe")}
-              type="checkbox"
-              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-            />
-            Remember me
-          </label>
+          <Controller
+            name="rememberMe"
+            control={control}
+            render={({ field }) => (
+              <label className="flex items-center gap-2 text-sm text-gray-600">
+                <Checkbox
+                  id="rememberMe"
+                  checked={!!field.value}
+                  onCheckedChange={(checked: boolean | "indeterminate") =>
+                    field.onChange(!!checked)
+                  }
+                />
+                <span>Remember me</span>
+              </label>
+            )}
+          />
           <Link
             href="/forgot-password"
             className="text-sm font-medium text-primary hover:text-blue-600"

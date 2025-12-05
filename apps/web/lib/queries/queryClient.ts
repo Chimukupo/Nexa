@@ -1,7 +1,6 @@
 "use client"
 
 import { QueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 
 /**
  * QueryClient configuration for TanStack Query

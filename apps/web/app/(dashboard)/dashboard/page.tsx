@@ -14,7 +14,7 @@ export default function DashboardPage() {
           Welcome back, {profile?.displayName || user?.displayName || "User"}!
         </h1>
         <p className="mt-1 text-muted-foreground">
-          Here's what's happening with your finances today.
+          Here&apos;s what&apos;s happening with your finances today.
         </p>
       </div>
 
