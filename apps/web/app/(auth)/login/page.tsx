@@ -18,7 +18,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const { signInWithGoogle, signInWithEmail } = useAuth();
+  const { signInWithEmail } = useAuth();
   const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   
@@ -50,15 +50,6 @@ export default function LoginPage() {
           message: "An error occurred. Please try again." 
         });
       }
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      await signInWithGoogle();
-      router.push("/dashboard");
-    } catch (error) {
-      console.error("Google sign in error:", error);
     }
   };
 
@@ -164,53 +155,15 @@ export default function LoginPage() {
       </form>
 
       {/* Divider */}
-      <div className="relative my-8">
+      {/* <div className="relative my-8">
         <div className="absolute inset-0 flex items-center" aria-hidden="true">
           <div className="w-full border-t border-gray-200" />
         </div>
         <div className="relative flex justify-center">
           <span className="bg-white px-4 text-sm text-gray-500">OR</span>
         </div>
-      </div>
+      </div> */}
 
-      {/* Social Login */}
-      <div className="space-y-3">
-        <button
-          type="button"
-          className="flex w-full items-center justify-center gap-3 rounded-full bg-black px-3 py-4 text-white hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-        >
-          <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M17.5 12.625c0-2.55 1.75-4.025 3.9-4.275-.425-1.15-1.2-2-2.15-2.525-1-.575-2.35-.625-3.225-.275-1.05.425-1.9.45-2.825-.025-.85-.425-2-.55-3.125.125-1.475.875-2.525 2.675-2.525 5.025 0 3.65 2.65 8.75 5.6 8.75 1.25 0 2-.875 3.125-2.825.725-1.275 1.15-1.65 1.15-1.65.55.325 1.275.3 1.875-.025.55-.325 1.025-.975 1.25-1.65-.325-.175-2.35-1.075-2.35-4.025zM12.7 4.85c.7-.85 1.125-1.95.975-3.025-1 .075-2.075.6-2.6 1.35-.5.7-.925 1.825-.75 2.9 1.05.075 1.8-.425 2.375-1.225z" />
-          </svg>
-          <span className="text-sm font-semibold">Log in with Apple</span>
-        </button>
-        
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          className="flex w-full items-center justify-center gap-3 rounded-full border border-gray-300 bg-white px-3 py-4 text-gray-900 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
-        >
-          <svg className="h-5 w-5" viewBox="0 0 24 24">
-            <path
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              fill="#4285F4"
-            />
-            <path
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              fill="#34A853"
-            />
-            <path
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.24.81-.6z"
-              fill="#FBBC05"
-            />
-            <path
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-              fill="#EA4335"
-            />
-          </svg>
-          <span className="text-sm font-semibold">Log in with Google</span>
-        </button>
-      </div>
     </div>
   );
 }
