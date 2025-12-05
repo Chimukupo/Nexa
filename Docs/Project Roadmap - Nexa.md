@@ -221,9 +221,9 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 **Estimated Duration:** 1 Sprint
 
-### **Milestone 3.1: Account CRUD Operations**
+### **Milestone 3.1: Account CRUD Operations** ✅
 
-- [ ] **Task 3.1.1:** Create account management hooks
+- [x] **Task 3.1.1:** Create account management hooks ✅
   - [ ] Create `lib/hooks/useAccounts.ts` with TanStack Query
   - [ ] Implement `useAccounts()` query hook
   - [ ] Implement `useCreateAccount()` mutation hook
@@ -231,7 +231,7 @@ This roadmap outlines the development phases, milestones, and tasks for building
   - [ ] Implement `useDeleteAccount()` mutation hook
   - [ ] Add optimistic updates
 
-- [ ] **Task 3.1.2:** Create account form component
+- [x] **Task 3.1.2:** Create account form component ✅
   - [ ] Create `components/forms/AccountForm.tsx`
   - [ ] Form fields: name, type (CASH, BANK, MOBILE_MONEY, SAVINGS), initialBalance
   - [ ] Use React Hook Form with Zod validation
@@ -239,7 +239,7 @@ This roadmap outlines the development phases, milestones, and tasks for building
   - [ ] Add form validation and error handling
   - [ ] Show success toast on submit
 
-- [ ] **Task 3.1.3:** Create accounts page
+- [x] **Task 3.1.3:** Create accounts page ✅
   - [ ] Create `app/(dashboard)/accounts/page.tsx`
   - [ ] Display list of accounts with cards
   - [ ] Show account balance, type, and name
@@ -247,22 +247,22 @@ This roadmap outlines the development phases, milestones, and tasks for building
   - [ ] Add edit and delete actions
   - [ ] Implement account archiving functionality
 
-- [ ] **Task 3.1.4:** Implement manual balance reconciliation
+- [ ] **Task 3.1.4:** Implement manual balance reconciliation ⏸️ (Deferred to Phase 4)
   - [ ] Add "Adjust Balance" feature to account cards
   - [ ] Create balance adjustment dialog/form
   - [ ] Create adjustment transaction automatically
   - [ ] Update account balance via transaction
 
-### **Milestone 3.2: Account Balance Display**
+### **Milestone 3.2: Account Balance Display** ✅
 
-- [ ] **Task 3.2.1:** Create account balance widgets
+- [x] **Task 3.2.1:** Create account balance widgets ✅
   - [ ] Create `components/widgets/AccountCard.tsx`
   - [ ] Display account name, type, current balance
   - [ ] Add account icon based on type
   - [ ] Show balance in user's currency
   - [ ] Add hover effects and interactions
 
-- [ ] **Task 3.2.2:** Create total net worth calculation
+- [x] **Task 3.2.2:** Create total net worth calculation ✅
   - [ ] Create `lib/utils/netWorth.ts` utility
   - [ ] Calculate total assets (sum of all account balances)
   - [ ] Display on dashboard (Phase 4)
@@ -959,14 +959,48 @@ This roadmap outlines the development phases, milestones, and tasks for building
 - ✅ Milestone 2.2: User Profile & Onboarding (100%)
 
 **Key Achievements:**
-- ✅ Full authentication flow with email/password and Google OAuth
-- ✅ Split-screen login/signup pages matching design reference
-- ✅ Multi-step onboarding wizard
+- ✅ Full authentication flow with email/password (Google OAuth removed per user request)
+- ✅ Clean, light-themed split-screen login/signup pages matching design reference
+- ✅ Centered onboarding layout (gradient removed for onboarding screens)
+- ✅ Multi-step onboarding wizard (Currency → Fiscal Profile → Review)
 - ✅ User profile management with Firestore integration
-- ✅ Protected routes with dashboard layout
+- ✅ Protected routes with light, glass-styled dashboard layout
 - ✅ Settings page for profile editing
+- ✅ Shared UI Checkbox component integrated in login page
+- ✅ Type-safe error handling (replaced `any` with `unknown`)
+- ✅ Zod v3 alignment across workspace for form validation
+
+**Deferred Items:**
+- ⏸️ Email verification page (deferred - not critical for MVP)
+- ⏸️ Onboarding Step 3: Initial Balance Setup (deferred to Phase 3)
+- ⏸️ Account deletion functionality (deferred to post-MVP)
+- ⏸️ Reusable profile form component (current implementation sufficient for MVP)
 
 **Next Steps:**
-- Complete remaining Phase 1 tasks (utility functions, UI components)
-- Begin Phase 3: Accounts & Asset Management
+- ✅ Phase 3: Accounts & Asset Management (In Progress)
+
+### **Phase 3: Accounts & Asset Management** - 🚧 In Progress
+
+**Completed:**
+- ✅ Task 3.1.1: Created account management hooks (`useAccounts`, `useAccount`, `useCreateAccount`, `useUpdateAccount`, `useArchiveAccount`, `useDeleteAccount`)
+- ✅ Task 3.1.2: Created AccountForm component with validation (supports create/edit modes)
+- ✅ Task 3.1.3: Created accounts page with list view, CRUD actions, and empty state
+- ✅ Task 3.2.1: Created AccountCard widget for reusable account display
+- ✅ Task 3.2.2: Created net worth calculation utilities (`calculateNetWorth`, `calculateBalanceByType`, `getAccountDistribution`)
+
+**Key Features Implemented:**
+- ✅ Account CRUD operations with Firestore integration
+- ✅ TanStack Query integration for data fetching and caching
+- ✅ Account types: Cash, Bank, Mobile Money, Savings
+- ✅ Glass-themed UI with light mode design
+- ✅ Total balance aggregation across accounts
+- ✅ Account archiving (soft delete) support
+- ✅ Form validation with Zod schemas
+- ✅ Optimistic updates and cache invalidation
+
+**Remaining Tasks:**
+- ⏳ Task 3.1.4: Implement manual balance reconciliation (deferred - requires transaction system)
+
+**Next Steps:**
+- Begin Phase 4: Transaction Management
 
