@@ -27,49 +27,49 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 ### **Milestone 1.1: Core Dependencies & Package Setup**
 
-- [ ] **Task 1.1.1:** Create `packages/validators` package
-  - [ ] Initialize package structure with `package.json`
-  - [ ] Install `zod` dependency
-  - [ ] Create base schemas: `CurrencyEnum`, `TransactionTypeEnum`, `AccountTypeEnum`, `CategoryTypeEnum`
-  - [ ] Create `UserProfileSchema` with currency, fiscalType, onboardingCompleted
-  - [ ] Create `AccountSchema` with name, type, currentBalance, isArchived
-  - [ ] Create `CategorySchema` with name, type, color, icon, monthlyBudgetCap
-  - [ ] Create `TransactionSchema` (base) with amount, categoryId, accountId, date, description, type, isRecurring
-  - [ ] Create `IncomeTransactionSchema` extending TransactionSchema with grossAmount, deductions
-  - [ ] Create `TransferTransactionSchema` extending TransactionSchema with toAccountId
-  - [ ] Create `RecurringRuleSchema` with name, amount, type, cronExpressionOrDay, accountId, categoryId, lastRunDate
-  - [ ] Create update schemas using `.partial()` for edit operations
-  - [ ] Export all TypeScript types using `z.infer<>`
-  - [ ] Add package to workspace and configure exports
+- [x] **Task 1.1.1:** Create `packages/validators` package ✅
+  - [x] Initialize package structure with `package.json`
+  - [x] Install `zod` dependency
+  - [x] Create base schemas: `CurrencyEnum`, `TransactionTypeEnum`, `AccountTypeEnum`, `CategoryTypeEnum`
+  - [x] Create `UserProfileSchema` with currency, fiscalType, onboardingCompleted
+  - [x] Create `AccountSchema` with name, type, currentBalance, isArchived
+  - [x] Create `CategorySchema` with name, type, color, icon, monthlyBudgetCap
+  - [x] Create `TransactionSchema` (base) with amount, categoryId, accountId, date, description, type, isRecurring
+  - [x] Create `IncomeTransactionSchema` extending TransactionSchema with grossAmount, deductions
+  - [x] Create `TransferTransactionSchema` extending TransactionSchema with toAccountId
+  - [x] Create `RecurringRuleSchema` with name, amount, type, cronExpressionOrDay, accountId, categoryId, lastRunDate
+  - [x] Create update schemas using `.partial()` for edit operations
+  - [x] Export all TypeScript types using `z.infer<>`
+  - [x] Add package to workspace and configure exports
 
-- [ ] **Task 1.1.2:** Install and configure TanStack Query in `apps/web`
-  - [ ] Install `@tanstack/react-query` (v5)
-  - [ ] Create `lib/queries/keys.ts` with Query Key Factories
-    - [ ] `transactionKeys` factory (all, lists, list with filters, details, detail)
-    - [ ] `accountKeys` factory
-    - [ ] `categoryKeys` factory
-    - [ ] `recurringRuleKeys` factory
-    - [ ] `userKeys` factory
-  - [ ] Create `lib/queries/queryClient.ts` with QueryClient configuration
-  - [ ] Set up QueryClientProvider in root `app/layout.tsx`
-  - [ ] Configure default query options (staleTime, cacheTime, retry logic)
+- [x] **Task 1.1.2:** Install and configure TanStack Query in `apps/web` ✅
+  - [x] Install `@tanstack/react-query` (v5)
+  - [x] Create `lib/queries/keys.ts` with Query Key Factories
+    - [x] `transactionKeys` factory (all, lists, list with filters, details, detail)
+    - [x] `accountKeys` factory
+    - [x] `categoryKeys` factory
+    - [x] `recurringRuleKeys` factory
+    - [x] `userKeys` factory
+  - [x] Create `lib/queries/queryClient.ts` with QueryClient configuration
+  - [x] Set up QueryClientProvider in root `app/layout.tsx`
+  - [x] Configure default query options (staleTime, cacheTime, retry logic)
 
-- [ ] **Task 1.1.3:** Install and configure React Hook Form + Zod Resolver
-  - [ ] Install `react-hook-form` and `@hookform/resolvers`
-  - [ ] Create form utilities in `lib/utils/form.ts`
-  - [ ] Set up form error handling patterns
+- [x] **Task 1.1.3:** Install and configure React Hook Form + Zod Resolver ✅
+  - [x] Install `react-hook-form` and `@hookform/resolvers`
+  - [x] Create form utilities in `lib/utils/form.ts`
+  - [x] Set up form error handling patterns
 
-- [ ] **Task 1.1.4:** Install and configure T3 Env
-  - [ ] Install `@t3-oss/env-nextjs`
-  - [ ] Create `apps/web/env.mjs` with server and client environment variable schemas
-  - [ ] Migrate existing `.env.local` variables to T3 Env
-  - [ ] Update `lib/firebase.ts` to use validated env variables
-  - [ ] Add validation for all Firebase config variables
+- [x] **Task 1.1.4:** Install and configure T3 Env ✅
+  - [x] Install `@t3-oss/env-nextjs`
+  - [x] Create `apps/web/env.mjs` with server and client environment variable schemas
+  - [x] Migrate existing `.env.local` variables to T3 Env
+  - [x] Update `lib/firebase.ts` to use validated env variables
+  - [x] Add validation for all Firebase config variables
 
-- [ ] **Task 1.1.5:** Install charting library (Recharts)
-  - [ ] Install `recharts` in `apps/web`
-  - [ ] Create `lib/utils/chart.ts` with chart configuration utilities
-  - [ ] Set up chart theme colors matching design system
+- [x] **Task 1.1.5:** Install charting library (Recharts) ✅
+  - [x] Install `recharts` in `apps/web`
+  - [x] Create `lib/utils/chart.ts` with chart configuration utilities
+  - [x] Set up chart theme colors matching design system
 
 - [ ] **Task 1.1.6:** Standardize TypeScript versions
   - [ ] Update all packages to TypeScript 5.7.3
@@ -78,46 +78,48 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 ### **Milestone 1.2: Firebase Infrastructure Refactoring**
 
-- [ ] **Task 1.2.1:** Refactor Firebase client structure
-  - [ ] Create `lib/firebase/client.ts` (move from `lib/firebase.ts`)
-  - [ ] Export `app`, `db`, `auth`, `analytics` from client.ts
-  - [ ] Create `lib/firebase/collections.ts` with typed collection references
-    - [ ] Implement `createConverter<T>()` helper with Timestamp handling
-    - [ ] Create `getTransactionsRef(userId)` with converter
-    - [ ] Create `getAccountsRef(userId)` with converter
-    - [ ] Create `getCategoriesRef(userId)` with converter
-    - [ ] Create `getRecurringRulesRef(userId)` with converter
-    - [ ] Create `getUserDoc(userId)` with converter
-    - [ ] Create document reference helpers for all entities
-  - [ ] Create `lib/firebase/admin.ts` (server-only) for Firebase Admin SDK
-  - [ ] Update all imports across codebase
+- [x] **Task 1.2.1:** Refactor Firebase client structure ✅
+  - [x] Create `lib/firebase/client.ts` (move from `lib/firebase.ts`)
+  - [x] Export `app`, `db`, `auth`, `analytics` from client.ts
+  - [x] Create `lib/firebase/collections.ts` with typed collection references
+    - [x] Implement `createConverter<T>()` helper with Timestamp handling
+    - [x] Create `getTransactionsRef(userId)` with converter
+    - [x] Create `getAccountsRef(userId)` with converter
+    - [x] Create `getCategoriesRef(userId)` with converter
+    - [x] Create `getRecurringRulesRef(userId)` with converter
+    - [x] Create `getUserDoc(userId)` with converter
+    - [x] Create document reference helpers for all entities
+  - [x] Create `lib/firebase/admin.ts` (server-only) for Firebase Admin SDK
+  - [x] Update all imports across codebase
 
-- [ ] **Task 1.2.2:** Implement Firestore Security Rules
-  - [ ] Update `firestore.rules` with proper security rules
-  - [ ] Create `isOwner(userId)` helper function
-  - [ ] Create validation functions: `isValidTransaction()`, `isValidAccount()`, `isValidCategory()`
-  - [ ] Implement rules for all subcollections (transactions, accounts, categories, recurring_rules)
-  - [ ] Add read-only field protection (e.g., currentBalance only updatable by Cloud Functions)
+- [x] **Task 1.2.2:** Implement Firestore Security Rules ✅
+  - [x] Update `firestore.rules` with proper security rules
+  - [x] Create `isOwner(userId)` helper function
+  - [x] Create validation functions: `isValidTransaction()`, `isValidAccount()`, `isValidCategory()`
+  - [x] Implement rules for all subcollections (transactions, accounts, categories, recurring_rules)
+  - [x] Add read-only field protection (e.g., currentBalance only updatable by Cloud Functions)
   - [ ] Test rules with Firebase Emulator
   - [ ] Deploy rules to Firebase project
 
-- [ ] **Task 1.2.3:** Configure Firestore Indexes
-  - [ ] Add composite index for transactions: `date` (DESC), `type`, `accountId`
-  - [ ] Add index for recurring rules: `cronExpressionOrDay`, `lastRunDate`
-  - [ ] Add index for categories: `type` (for 50/30/20 filtering)
-  - [ ] Update `firestore.indexes.json`
+- [x] **Task 1.2.3:** Configure Firestore Indexes ✅
+  - [x] Add composite index for transactions: `date` (DESC), `type`, `accountId`
+  - [x] Add index for recurring rules: `cronExpressionOrDay`, `lastRunDate`
+  - [x] Add index for categories: `type` (for 50/30/20 filtering)
+  - [x] Update `firestore.indexes.json`
   - [ ] Deploy indexes to Firebase
 
-- [ ] **Task 1.2.4:** Set up Firebase Cloud Functions structure
-  - [ ] Create `functions/src/triggers/` directory
-  - [ ] Create `functions/src/scheduled/` directory
-  - [ ] Update `functions/src/index.ts` to export all functions
-  - [ ] Configure function deployment settings
+- [x] **Task 1.2.4:** Set up Firebase Cloud Functions structure ✅
+  - [x] Create `functions/src/triggers/` directory
+  - [x] Create `functions/src/scheduled/` directory
+  - [x] Update `functions/src/index.ts` to export all functions
+  - [x] Implement Balance Keeper function (`onTransactionWrite.ts`)
+  - [x] Implement Recurring Engine function (`processRecurringRules.ts`)
+  - [x] Configure function deployment settings
 
 ### **Milestone 1.3: UI Foundation & Utilities**
 
-- [ ] **Task 1.3.1:** Create utility functions
-  - [ ] Create `lib/utils.ts` with `cn()` helper (clsx + tailwind-merge)
+- [x] **Task 1.3.1:** Create utility functions 🚧 (Partially Complete)
+  - [x] Create `lib/utils.ts` with `cn()` helper (clsx + tailwind-merge)
   - [ ] Create `lib/utils/format.ts` with currency, date, number formatters
   - [ ] Create `lib/utils/calculations.ts` with net pay, budget calculations
   - [ ] Export utilities from `lib/utils/index.ts`
@@ -921,4 +923,27 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 **Last Updated:** December 2024  
 **Next Review:** After Phase 1 completion
+
+---
+
+## **Progress Summary**
+
+### **Phase 1: Foundation & Project Setup** - 🚧 In Progress
+
+**Completed:**
+- ✅ Milestone 1.1: Core Dependencies & Package Setup (100%)
+- ✅ Milestone 1.2: Firebase Infrastructure Refactoring (100%)
+- 🚧 Milestone 1.3: UI Foundation & Utilities (33% - utilities.ts created, format.ts and calculations.ts pending)
+
+**Remaining Tasks:**
+- Task 1.1.6: Standardize TypeScript versions across all packages
+- Task 1.2.2: Test and deploy Firestore Security Rules
+- Task 1.2.3: Deploy Firestore Indexes
+- Task 1.3.1: Complete utility functions (format.ts, calculations.ts)
+- Task 1.3.2: Set up shadcn/ui components
+- Task 1.3.3: Create base UI components
+
+**Next Steps:**
+- Complete remaining Phase 1 tasks
+- Begin Phase 2: Authentication & User Management
 
