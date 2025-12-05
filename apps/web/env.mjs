@@ -14,7 +14,8 @@ export const env = createEnv({
    */
   server: {
     // Firebase Admin SDK credentials (for server-side operations)
-    FIREBASE_PROJECT_ID: z.string().min(1),
+    // Currently optional as we're using client-side Firebase Auth
+    FIREBASE_PROJECT_ID: z.string().min(1).optional(),
     FIREBASE_CLIENT_EMAIL: z.string().email().optional(),
     FIREBASE_PRIVATE_KEY: z.string().optional(),
     

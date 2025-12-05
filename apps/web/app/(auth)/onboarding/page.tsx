@@ -1,0 +1,261 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/contexts/AuthContext";
+import { useCreateUserProfile, useUserProfile } from "@/lib/hooks/useUserProfile";
+import { CurrencyEnum, FiscalProfileEnum } from "@workspace/validators";
+import { Check, ChevronRight, Wallet, Briefcase, DollarSign } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const CURRENCIES = [
+  { value: "ZMW", label: "Zambian Kwacha", symbol: "K" },
+  { value: "USD", label: "US Dollar", symbol: "$" },
+  { value: "GBP", label: "British Pound", symbol: "£" },
+  { value: "ZAR", label: "South African Rand", symbol: "R" },
+  { value: "EUR", label: "Euro", symbol: "€" },
+];
+
+const FISCAL_TYPES = [
+  { 
+    value: "SALARIED", 
+    label: "Salaried", 
+    description: "I receive a regular paycheck.",
+    icon: Briefcase 
+  },
+  { 
+    value: "FREELANCE", 
+    label: "Freelance / Self-Employed", 
+    description: "My income varies or comes from multiple sources.",
+    icon: Wallet 
+  },
+];
+
+export default function OnboardingPage() {
+  const { user } = useAuth();
+  const router = useRouter();
+  const { data: userProfile, isLoading: isProfileLoading } = useUserProfile();
+  const createUserProfile = useCreateUserProfile();
+  
+  const [step, setStep] = useState(1);
+  const [currency, setCurrency] = useState<string>("ZMW");
+  const [fiscalType, setFiscalType] = useState<"SALARIED" | "FREELANCE">("SALARIED");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    // If user already has a completed profile, redirect to dashboard
+    if (userProfile?.onboardingCompleted) {
+      router.push("/dashboard");
+    }
+  }, [userProfile, router]);
+
+  const handleComplete = async () => {
+    if (!user) return;
+    setIsSubmitting(true);
+
+    try {
+      // Basic parsing of enums to match Zod schema expectations
+      // In a real app, ensure strict type safety
+      const selectedCurrency = CurrencyEnum.parse(currency);
+      const selectedFiscalType = FiscalProfileEnum.parse(fiscalType);
+
+      await createUserProfile.mutateAsync({
+        uid: user.uid,
+        email: user.email || "",
+        displayName: user.displayName || "User",
+        currency: selectedCurrency,
+        fiscalType: selectedFiscalType,
+        onboardingCompleted: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Onboarding error:", error);
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isProfileLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full max-w-lg">
+      {/* Progress Bar */}
+      <div className="mb-8">
+        <div className="mb-2 flex justify-between text-sm font-medium text-gray-500">
+          <span>Step {step} of 3</span>
+          <span>{Math.round((step / 3) * 100)}%</span>
+        </div>
+        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+          <div 
+            className="h-full bg-primary transition-all duration-300 ease-out"
+            style={{ width: `${(step / 3) * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Step 1: Currency */}
+      {step === 1 && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Select Currency</h1>
+            <p className="mt-2 text-gray-500">Choose your primary currency for tracking finances.</p>
+          </div>
+          
+          <div className="grid gap-3">
+            {CURRENCIES.map((c) => (
+              <button
+                key={c.value}
+                onClick={() => setCurrency(c.value)}
+                className={cn(
+                  "flex items-center justify-between rounded-xl border p-4 text-left transition-all",
+                  currency === c.value
+                    ? "border-primary bg-blue-50 ring-1 ring-primary"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-lg font-semibold shadow-sm">
+                    {c.symbol}
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{c.label}</p>
+                    <p className="text-sm text-gray-500">{c.value}</p>
+                  </div>
+                </div>
+                {currency === c.value && <Check className="h-5 w-5 text-primary" />}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setStep(2)}
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-4 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
+          >
+            Continue <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Step 2: Fiscal Profile */}
+      {step === 2 && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Employment Type</h1>
+            <p className="mt-2 text-gray-500">This helps us tailor your financial insights.</p>
+          </div>
+          
+          <div className="grid gap-4">
+            {FISCAL_TYPES.map((type) => (
+              <button
+                key={type.value}
+                onClick={() => setFiscalType(type.value as any)}
+                className={cn(
+                  "flex items-start gap-4 rounded-xl border p-4 text-left transition-all",
+                  fiscalType === type.value
+                    ? "border-primary bg-blue-50 ring-1 ring-primary"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                )}
+              >
+                <div className={cn(
+                  "flex h-12 w-12 items-center justify-center rounded-full",
+                  fiscalType === type.value ? "bg-white text-primary" : "bg-gray-100 text-gray-500"
+                )}>
+                  <type.icon className="h-6 w-6" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-gray-900">{type.label}</p>
+                    {fiscalType === type.value && <Check className="h-5 w-5 text-primary" />}
+                  </div>
+                  <p className="mt-1 text-sm text-gray-500">{type.description}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => setStep(1)}
+              className="w-1/3 rounded-full border border-gray-300 bg-white py-4 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+            >
+              Back
+            </button>
+            <button
+              onClick={() => setStep(3)}
+              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary py-4 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
+            >
+              Continue <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Review & Complete */}
+      {step === 3 && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Almost There!</h1>
+            <p className="mt-2 text-gray-500">Review your details to complete setup.</p>
+          </div>
+          
+          <div className="rounded-2xl bg-gray-50 p-6 space-y-4">
+            <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
+                  <DollarSign className="h-5 w-5 text-gray-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Currency</p>
+                  <p className="font-medium text-gray-900">
+                    {CURRENCIES.find(c => c.value === currency)?.label} ({currency})
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setStep(1)} className="text-sm font-medium text-primary">Change</button>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
+                  <Briefcase className="h-5 w-5 text-gray-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Employment</p>
+                  <p className="font-medium text-gray-900">
+                    {FISCAL_TYPES.find(t => t.value === fiscalType)?.label}
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setStep(2)} className="text-sm font-medium text-primary">Change</button>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={() => setStep(2)}
+              className="w-1/3 rounded-full border border-gray-300 bg-white py-4 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+            >
+              Back
+            </button>
+            <button
+              onClick={handleComplete}
+              disabled={isSubmitting}
+              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary py-4 text-sm font-semibold text-white shadow-sm hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Setting up..." : "Complete Setup"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
