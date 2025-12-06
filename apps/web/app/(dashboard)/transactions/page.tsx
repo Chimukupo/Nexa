@@ -14,6 +14,7 @@ import { useAccounts } from "@/lib/hooks/useAccounts";
 import { TransactionForm } from "@/components/forms/TransactionForm";
 import { Button } from "@workspace/ui/components/button";
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
+import { Card, CardContent } from "@workspace/ui/components/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -142,7 +143,7 @@ export default function TransactionsPage() {
               <AlertDialogCancel onClick={() => setTransactionToDelete(null)}>
                 Cancel
               </AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-white hover:bg-destructive/90">
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -151,16 +152,37 @@ export default function TransactionsPage() {
 
         {/* Filter Tabs */}
         <Tabs value={filterType} onValueChange={(value) => setFilterType(value as TransactionType | "ALL")} className="mb-6">
-          <TabsList>
-            <TabsTrigger value="ALL">All</TabsTrigger>
-            <TabsTrigger value="INCOME">Income</TabsTrigger>
-            <TabsTrigger value="EXPENSE">Expense</TabsTrigger>
-            <TabsTrigger value="TRANSFER">Transfer</TabsTrigger>
+          <TabsList className="bg-card p-1 rounded-xl shadow-sm border">
+            <TabsTrigger 
+                value="ALL" 
+                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg transition-all"
+            >
+                All
+            </TabsTrigger>
+            <TabsTrigger 
+                value="INCOME" 
+                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg transition-all"
+            >
+                Income
+            </TabsTrigger>
+            <TabsTrigger 
+                value="EXPENSE" 
+                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg transition-all"
+            >
+                Expense
+            </TabsTrigger>
+            <TabsTrigger 
+                value="TRANSFER" 
+                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg transition-all"
+            >
+                Transfer
+            </TabsTrigger>
           </TabsList>
         </Tabs>
 
         {/* Transactions List */}
-        <div className="bg-surface/50 backdrop-blur-sm border border-border/50 rounded-2xl overflow-hidden shadow-sm">
+        <Card className="rounded-2xl overflow-hidden shadow-sm">
+           <CardContent className="p-0">
             {isLoading ? (
                  <div className="p-8 text-center text-muted-foreground">Loading transactions...</div>
             ) : transactions?.length === 0 ? (
@@ -245,12 +267,13 @@ export default function TransactionsPage() {
                     </table>
                 </div>
             )}
-        </div>
+            </CardContent>
+        </Card>
 
         {/* Modal */}
         {formState && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-surface/95 backdrop-blur-xl rounded-2xl p-6 md:p-8 max-w-lg w-full border border-border/50 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-card rounded-2xl p-6 md:p-8 max-w-lg w-full border border-border/50 shadow-2xl max-h-[90vh] overflow-y-auto">
               <h2 className="text-2xl font-semibold text-foreground mb-6">
                 {formState.mode === "create" ? "Add Transaction" : "Edit Transaction"}
               </h2>

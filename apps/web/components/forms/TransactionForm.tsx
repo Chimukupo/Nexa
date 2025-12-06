@@ -131,7 +131,7 @@ export function TransactionForm({
             Amount
           </label>
           <div className="relative">
-             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">
+             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                K
              </span>
              <input
@@ -140,7 +140,7 @@ export function TransactionForm({
               step="0.01"
               {...register("amount", { valueAsNumber: true })}
               placeholder="0.00"
-              className="w-full pl-8 pr-4 py-3 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="w-full pl-8 pr-4 py-3 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             />
           </div>
           {errors.amount && (
@@ -157,7 +157,7 @@ export function TransactionForm({
             type="date"
             {...register("date", { valueAsDate: true })}
             defaultValue={today}
-            className="w-full px-4 py-3 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="w-full px-4 py-3 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
           />
           {errors.date && (
             <p className="text-sm text-rose-500 mt-1">{errors.date.message as string}</p>
@@ -190,7 +190,7 @@ export function TransactionForm({
                     <input 
                         type="number" 
                         {...register("grossAmount", { valueAsNumber: true })}
-                        className="w-full mt-1 px-3 py-2 rounded-lg border border-border/50 text-sm"
+                        className="w-full mt-1 px-3 py-2 rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                         placeholder="0.00" 
                     />
                     {errors.grossAmount && <p className="text-xs text-rose-500">{errors.grossAmount.message}</p>}
@@ -200,7 +200,7 @@ export function TransactionForm({
                     <input 
                         type="number" 
                         {...register("deductions", { valueAsNumber: true })}
-                        className="w-full mt-1 px-3 py-2 rounded-lg border border-border/50 text-sm"
+                        className="w-full mt-1 px-3 py-2 rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                         placeholder="0.00" 
                     />
                  </div>
@@ -324,7 +324,7 @@ export function TransactionForm({
             id="description"
             type="text"
             {...register("description")}
-            className="w-full px-4 py-3 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="w-full px-4 py-3 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             placeholder="What was this for?"
         />
       </div>

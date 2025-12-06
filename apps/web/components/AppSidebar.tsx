@@ -118,7 +118,7 @@ export function AppSidebar() {
                   </div>
                   <div className="flex-1 text-left text-sm leading-tight">
                     <span className="block truncate font-medium">
-                      {user?.email?.split("@")[0] || "User"}
+                      {profile?.displayName || user?.displayName || user?.email?.split("@")[0] || "User"}
                     </span>
                     <span className="block truncate text-xs text-muted-foreground">
                       {profile?.currency || "ZMW"}

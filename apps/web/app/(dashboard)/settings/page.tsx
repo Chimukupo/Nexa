@@ -26,13 +26,37 @@ export default function SettingsPage() {
   const updateProfile = useUpdateUserProfile();
   
   const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    displayName: "",
+    currency: "ZMW",
+    fiscalType: "SALARIED"
+  });
+
+  // Load initial data when entering edit mode or when profile loads
+  const startEditing = () => {
+    setFormData({
+      displayName: profile?.displayName || user?.displayName || "",
+      currency: profile?.currency || "ZMW",
+      fiscalType: profile?.fiscalType || "SALARIED"
+    });
+    setIsEditing(true);
+  };
   
-  const handleUpdateProfile = async (currency: string, fiscalType: string) => {
+  const handleSave = async () => {
     try {
+      // Update Firestore Profile
       await updateProfile.mutateAsync({
-        currency: CurrencyEnum.parse(currency),
-        fiscalType: FiscalProfileEnum.parse(fiscalType),
+        displayName: formData.displayName,
+        currency: CurrencyEnum.parse(formData.currency),
+        fiscalType: FiscalProfileEnum.parse(formData.fiscalType),
       });
+
+      // Update Auth Profile (if name changed)
+      if (user && formData.displayName !== user.displayName) {
+          const { updateProfile: updateAuthProfile } = await import("firebase/auth");
+          await updateAuthProfile(user, { displayName: formData.displayName });
+      }
+
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile", error);
@@ -55,8 +79,18 @@ export default function SettingsPage() {
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
             <UserIcon className="h-8 w-8" />
           </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">{profile?.displayName || user?.displayName || "User"}</h2>
+          <div className="flex-1">
+            {isEditing ? (
+                 <input 
+                    type="text"
+                    value={formData.displayName}
+                    onChange={(e) => setFormData({...formData, displayName: e.target.value})}
+                    className="block w-full rounded-lg border-gray-300 text-sm focus:border-primary focus:ring-primary font-semibold text-gray-900"
+                    placeholder="Your Name"
+                 />
+            ) : (
+                <h2 className="text-lg font-semibold text-gray-900">{profile?.displayName || user?.displayName || "User"}</h2>
+            )}
             <p className="text-sm text-gray-500">{user?.email}</p>
           </div>
         </div>
@@ -73,8 +107,8 @@ export default function SettingsPage() {
             {isEditing ? (
               <select 
                 className="rounded-lg border-gray-300 text-sm focus:border-primary focus:ring-primary"
-                defaultValue={profile?.currency || "ZMW"}
-                onChange={(e) => handleUpdateProfile(e.target.value, profile?.fiscalType || "SALARIED")}
+                value={formData.currency}
+                onChange={(e) => setFormData({...formData, currency: e.target.value})}
               >
                 {CURRENCIES.map(c => (
                   <option key={c.value} value={c.value}>{c.value} ({c.symbol})</option>
@@ -96,8 +130,8 @@ export default function SettingsPage() {
             {isEditing ? (
               <select 
                 className="rounded-lg border-gray-300 text-sm focus:border-primary focus:ring-primary"
-                defaultValue={profile?.fiscalType || "SALARIED"}
-                onChange={(e) => handleUpdateProfile(profile?.currency || "ZMW", e.target.value)}
+                value={formData.fiscalType}
+                onChange={(e) => setFormData({...formData, fiscalType: e.target.value})}
               >
                 {FISCAL_TYPES.map(t => (
                   <option key={t.value} value={t.value}>{t.label}</option>
@@ -113,16 +147,24 @@ export default function SettingsPage() {
 
         <div className="pt-4 flex gap-3">
           <button
-            onClick={() => setIsEditing(!isEditing)}
+            onClick={() => isEditing ? handleSave() : startEditing()}
             className={cn(
               "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
               isEditing 
-                ? "bg-gray-100 text-gray-700 hover:bg-gray-200" 
-                : "bg-primary text-white hover:bg-blue-600"
+                ? "bg-primary text-white hover:bg-primary/90" 
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             )}
           >
-            {isEditing ? "Done" : "Edit Profile"}
+            {isEditing ? "Save Changes" : "Edit Profile"}
           </button>
+           {isEditing && (
+              <button
+                onClick={() => setIsEditing(false)}
+                className="rounded-lg px-4 py-2 text-sm font-medium transition-colors bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+           )}
         </div>
       </div>
 
