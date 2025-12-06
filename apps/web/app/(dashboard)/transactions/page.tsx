@@ -13,6 +13,18 @@ import { useCategories } from "@/lib/hooks/useCategories";
 import { useAccounts } from "@/lib/hooks/useAccounts";
 import { TransactionForm } from "@/components/forms/TransactionForm";
 import { Button } from "@workspace/ui/components/button";
+import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog";
+import { toast } from "sonner";
 import type { z } from "zod";
 import { CreateTransactionSchema, TransactionType } from "@workspace/validators";
 
@@ -37,7 +49,8 @@ export default function TransactionsPage() {
   const deleteTransaction = useDeleteTransaction();
 
   const [formState, setFormState] = useState<FormState>(null);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
 
   const activeTransaction =
     formState && formState.mode === "edit" && transactions
@@ -54,24 +67,29 @@ export default function TransactionsPage() {
       
       if (formState?.mode === "edit" && formState.transactionId) {
         await updateTransaction.mutateAsync({ id: formState.transactionId, data: transactionData });
-        setStatusMessage("Transaction updated.");
+        toast.success("Transaction updated successfully");
       } else {
         await createTransaction.mutateAsync(transactionData);
-        setStatusMessage("Transaction added.");
+        toast.success("Transaction added successfully");
       }
       setFormState(null);
-      // Clear status after 3 seconds
-      setTimeout(() => setStatusMessage(null), 3000);
     } catch (error) {
       console.error("Failed to save transaction", error);
+      toast.error("Failed to save transaction. Please try again.");
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this transaction?")) {
-        await deleteTransaction.mutateAsync(id);
-        setStatusMessage("Transaction deleted.");
-        setTimeout(() => setStatusMessage(null), 3000);
+  const handleDelete = async () => {
+    if (!transactionToDelete) return;
+    
+    try {
+      await deleteTransaction.mutateAsync(transactionToDelete);
+      toast.success("Transaction deleted successfully");
+      setDeleteDialogOpen(false);
+      setTransactionToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete transaction", error);
+      toast.error("Failed to delete transaction. Please try again.");
     }
   };
 
@@ -101,21 +119,6 @@ export default function TransactionsPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-             <div className="flex p-1 bg-surface border border-border/50 rounded-lg">
-                {(["ALL", "INCOME", "EXPENSE", "TRANSFER"] as const).map(type => (
-                    <button
-                        key={type}
-                        onClick={() => setFilterType(type)}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
-                            filterType === type 
-                            ? "bg-white text-foreground shadow-sm" 
-                            : "text-muted-foreground hover:bg-white/50"
-                        }`}
-                    >
-                        {type === "ALL" ? "All" : type.charAt(0) + type.slice(1).toLowerCase()}
-                    </button>
-                ))}
-             </div>
             <Button
               onClick={() => setFormState({ mode: "create" })}
               className="flex items-center gap-2"
@@ -125,13 +128,36 @@ export default function TransactionsPage() {
             </Button>
           </div>
         </div>
-        
-        {/* Status Toast */}
-        {statusMessage && (
-            <div className="mb-4 p-3 bg-emerald-50 text-emerald-700 text-sm rounded-xl border border-emerald-100 flex items-center justify-center">
-                {statusMessage}
-            </div>
-        )}
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Transaction?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this transaction? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setTransactionToDelete(null)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Filter Tabs */}
+        <Tabs value={filterType} onValueChange={(value) => setFilterType(value as TransactionType | "ALL")} className="mb-6">
+          <TabsList>
+            <TabsTrigger value="ALL">All</TabsTrigger>
+            <TabsTrigger value="INCOME">Income</TabsTrigger>
+            <TabsTrigger value="EXPENSE">Expense</TabsTrigger>
+            <TabsTrigger value="TRANSFER">Transfer</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         {/* Transactions List */}
         <div className="bg-surface/50 backdrop-blur-sm border border-border/50 rounded-2xl overflow-hidden shadow-sm">
@@ -203,7 +229,10 @@ export default function TransactionsPage() {
                                                 Edit
                                             </button>
                                             <button 
-                                                onClick={() => handleDelete(txn.id)}
+                                                onClick={() => {
+                                                  setTransactionToDelete(txn.id);
+                                                  setDeleteDialogOpen(true);
+                                                }}
                                                 className="text-xs font-medium text-muted-foreground hover:text-rose-600"
                                             >
                                                 Delete
