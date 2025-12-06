@@ -109,10 +109,9 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="space-y-6 py-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold text-foreground">Transactions</h1>
             <p className="text-muted-foreground mt-1">
@@ -151,7 +150,7 @@ export default function TransactionsPage() {
         </AlertDialog>
 
         {/* Filter Tabs */}
-        <Tabs value={filterType} onValueChange={(value) => setFilterType(value as TransactionType | "ALL")} className="mb-6">
+        <Tabs value={filterType} onValueChange={(value) => setFilterType(value as TransactionType | "ALL")}>
           <TabsList className="bg-card p-1 rounded-xl shadow-sm border">
             <TabsTrigger 
                 value="ALL" 
@@ -293,7 +292,6 @@ export default function TransactionsPage() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }
