@@ -1,8 +1,8 @@
 # **Project Roadmap: Nexa**
 
-**Version:** 1.0  
-**Last Updated:** December 2024  
-**Status:** Active Development  
+**Version:** 1.1  
+**Last Updated:** December 6, 2025  
+**Status:** Active Development (Phases 1-3 Complete, Phase 4 In Progress)  
 **Development Methodology:** Agile (Sprint-based)
 
 ---
@@ -12,6 +12,7 @@
 This roadmap outlines the development phases, milestones, and tasks for building Nexa, a personal finance Progressive Web App. The project follows an iterative, agile approach with sprints typically lasting 1-2 weeks.
 
 **Legend:**
+
 - ✅ Completed
 - 🚧 In Progress
 - ⏳ Pending
@@ -34,9 +35,9 @@ This roadmap outlines the development phases, milestones, and tasks for building
   - [x] Create `UserProfileSchema` with currency, fiscalType, onboardingCompleted
   - [x] Create `AccountSchema` with name, type, currentBalance, isArchived
   - [x] Create `CategorySchema` with name, type, color, icon, monthlyBudgetCap
-  - [x] Create `TransactionSchema` (base) with amount, categoryId, accountId, date, description, type, isRecurring
-  - [x] Create `IncomeTransactionSchema` extending TransactionSchema with grossAmount, deductions
-  - [x] Create `TransferTransactionSchema` extending TransactionSchema with toAccountId
+  - [x] Create `TransactionSchema` (base) with amount, accountId (required), categoryId (optional, required via refinement for INCOME/EXPENSE), date, description, type, isRecurring
+  - [x] Create income-specific fields: grossAmount, deductions within TransactionSchema
+  - [x] Create transfer-specific field: toAccountId within TransactionSchema with refinements
   - [x] Create `RecurringRuleSchema` with name, amount, type, cronExpressionOrDay, accountId, categoryId, lastRunDate
   - [x] Create update schemas using `.partial()` for edit operations
   - [x] Export all TypeScript types using `z.infer<>`
@@ -224,28 +225,32 @@ This roadmap outlines the development phases, milestones, and tasks for building
 ### **Milestone 3.1: Account CRUD Operations** ✅
 
 - [x] **Task 3.1.1:** Create account management hooks ✅
-  - [ ] Create `lib/hooks/useAccounts.ts` with TanStack Query
-  - [ ] Implement `useAccounts()` query hook
-  - [ ] Implement `useCreateAccount()` mutation hook
-  - [ ] Implement `useUpdateAccount()` mutation hook
-  - [ ] Implement `useDeleteAccount()` mutation hook
-  - [ ] Add optimistic updates
+  - [x] Create `lib/hooks/useAccounts.ts` with TanStack Query
+  - [x] Implement `useAccounts()` query hook
+  - [x] Implement `useCreateAccount()` mutation hook (with undefined field filtering)
+  - [x] Implement `useUpdateAccount()` mutation hook (with undefined field filtering)
+  - [x] Implement `useDeleteAccount()` mutation hook
+  - [x] Implement `useArchiveAccount()` mutation hook (soft delete)
+  - [x] Add optimistic updates
 
 - [x] **Task 3.1.2:** Create account form component ✅
-  - [ ] Create `components/forms/AccountForm.tsx`
-  - [ ] Form fields: name, type (CASH, BANK, MOBILE_MONEY, SAVINGS), initialBalance
-  - [ ] Use React Hook Form with Zod validation
-  - [ ] Handle create and edit modes
-  - [ ] Add form validation and error handling
-  - [ ] Show success toast on submit
+  - [x] Create `components/forms/AccountForm.tsx`
+  - [x] Form fields: name, type (CASH, BANK, MOBILE_MONEY, SAVINGS), initialBalance
+  - [x] Use React Hook Form with Zod validation
+  - [x] Handle create and edit modes
+  - [x] Add form validation and error handling
+  - [x] Visual account type selection with cards
 
 - [x] **Task 3.1.3:** Create accounts page ✅
-  - [ ] Create `app/(dashboard)/accounts/page.tsx`
-  - [ ] Display list of accounts with cards
-  - [ ] Show account balance, type, and name
-  - [ ] Add "Create Account" button
-  - [ ] Add edit and delete actions
-  - [ ] Implement account archiving functionality
+  - [x] Create `app/(dashboard)/accounts/page.tsx`
+  - [x] Display list of accounts with cards
+  - [x] Show account balance, type, and name
+  - [x] Add "Create Account" button
+  - [x] Add edit and delete actions
+  - [x] Implement account archiving functionality
+  - [x] Modal-based forms for create/edit
+  - [x] Empty state with CTA
+  - [x] Mobile responsive layout
 
 - [ ] **Task 3.1.4:** Implement manual balance reconciliation ⏸️ (Deferred to Phase 4)
   - [ ] Add "Adjust Balance" feature to account cards
@@ -256,75 +261,94 @@ This roadmap outlines the development phases, milestones, and tasks for building
 ### **Milestone 3.2: Account Balance Display** ✅
 
 - [x] **Task 3.2.1:** Create account balance widgets ✅
-  - [ ] Create `components/widgets/AccountCard.tsx`
-  - [ ] Display account name, type, current balance
-  - [ ] Add account icon based on type
-  - [ ] Show balance in user's currency
-  - [ ] Add hover effects and interactions
+  - [x] Create `components/widgets/AccountCard.tsx`
+  - [x] Display account name, type, current balance
+  - [x] Add account icon based on type
+  - [x] Show balance in user's currency
+  - [x] Add hover effects and interactions
+  - [x] Edit/Archive/Delete actions
 
 - [x] **Task 3.2.2:** Create total net worth calculation ✅
-  - [ ] Create `lib/utils/netWorth.ts` utility
-  - [ ] Calculate total assets (sum of all account balances)
-  - [ ] Display on dashboard (Phase 4)
+  - [x] Create `lib/utils/netWorth.ts` utility
+  - [x] Calculate total assets (sum of all account balances)
+  - [x] Filter archived accounts from calculations
+  - [x] Display on dashboard
 
 ---
 
-## **Phase 4: Transaction Management**
+## **Phase 4: Transaction Management** 👷 85% Complete
 
 **Goal:** Implement transaction tracking, categorization, and quick entry.
 
 **Estimated Duration:** 2 Sprints
 
-### **Milestone 4.1: Transaction CRUD Operations**
+### **Milestone 4.1: Transaction CRUD Operations** 👷 90% Complete
 
-- [ ] **Task 4.1.1:** Create transaction management hooks
-  - [ ] Create `lib/hooks/useTransactions.ts` with TanStack Query
-  - [ ] Implement `useTransactions()` query hook with filters
-  - [ ] Implement `useCreateTransaction()` mutation hook
-  - [ ] Implement `useUpdateTransaction()` mutation hook
-  - [ ] Implement `useDeleteTransaction()` mutation hook
-  - [ ] Add date range filtering support
-  - [ ] Add account and category filtering
-  - [ ] Add optimistic updates
+- [x] **Task 4.1.1:** Create transaction management hooks ✅
+  - [x] Create `lib/hooks/useTransactions.ts` with TanStack Query
+  - [x] Implement `useTransactions()` query hook with filters
+  - [x] Implement `useCreateTransaction()` mutation hook (with undefined filtering + date conversion)
+  - [x] Implement `useUpdateTransaction()` mutation hook (with undefined filtering + date conversion)
+  - [x] Implement `useDeleteTransaction()` mutation hook
+  - [x] Add date range filtering support
+  - [x] Add account and category filtering
+  - [x] Add type filtering (INCOME, EXPENSE, TRANSFER)
+  - [x] Add 50-record default limit when no date range
+  - [x] Add optimistic updates
 
-- [ ] **Task 4.1.2:** Create transaction form component
-  - [ ] Create `components/forms/TransactionForm.tsx`
-  - [ ] Form fields: amount, type (INCOME, EXPENSE, TRANSFER), accountId, categoryId, date, description
-  - [ ] Dynamic "To Account" field for TRANSFER type
-  - [ ] Income-specific fields: grossAmount, deductions (Advanced Mode)
-  - [ ] Simple Mode vs Advanced Mode toggle for income
-  - [ ] Use React Hook Form with Zod validation
-  - [ ] Handle create and edit modes
-  - [ ] Add form validation and error handling
-  - [ ] Show loading state during submission
-  - [ ] Show success toast on submit
+- [x] **Task 4.1.2:** Create transaction form component ✅
+  - [x] Create `components/forms/TransactionForm.tsx`
+  - [x] Form fields: amount, type (INCOME, EXPENSE, TRANSFER), accountId, categoryId, date, description
+  - [x] Dynamic "To Account" field for TRANSFER type
+  - [x] Income-specific fields: grossAmount, deductions (Advanced Mode)
+  - [x] Simple Mode vs Advanced Mode toggle for income
+  - [x] Auto-calculate Net Pay from Gross - Deductions
+  - [x] Visual account/category selection
+  - [x] Use React Hook Form with Zod validation
+  - [x] Handle create and edit modes
+  - [x] Add form validation and error handling
+  - [x] Show loading state during submission
+  - [x] Conditional logic: Transfer shows 2 accounts, Income/Expense shows category
 
-- [ ] **Task 4.1.3:** Create transactions page
-  - [ ] Create `app/(dashboard)/transactions/page.tsx`
-  - [ ] Display transactions in data table
-  - [ ] Add filters: date range, account, category, type
-  - [ ] Add sorting by date, amount
+- [x] **Task 4.1.3:** Create transactions page ✅
+  - [x] Create `app/(dashboard)/transactions/page.tsx`
+  - [x] Display transactions in data table
+  - [x] Add filters: type (ALL, INCOME, EXPENSE, TRANSFER)
+  - [x] Add sorting by date (descending)
+  - [x] Add "Add Transaction" button
+  - [x] Add edit and delete actions (with confirmation)
+  - [x] Modal-based transaction form
+  - [x] Empty state with CTA
+  - [x] Color-coded transactions (green=income, red=expense, blue=transfer)
+  - [x] Show transfer destination account
+  - [ ] Add date range filter
+  - [ ] Add account filter
+  - [ ] Add category filter
   - [ ] Add search functionality
-  - [ ] Add "Add Transaction" button (FAB on mobile)
-  - [ ] Add edit and delete actions
   - [ ] Show transaction details in expandable rows
 
-- [ ] **Task 4.1.4:** Implement quick add expense (3-click rule)
+- [ ] **Task 4.1.4:** Implement quick add expense (3-click rule) ⏳
   - [ ] Create quick add expense dialog/modal
   - [ ] Pre-fill current date and default account
   - [ ] Show category quick-select buttons
   - [ ] Minimize form fields for speed
   - [ ] Add keyboard shortcuts
 
-### **Milestone 4.2: Category Management**
+- [ ] **Task 4.1.5:** Connect dashboard monthly widgets ⏳
+  - [ ] Calculate Monthly Income from transactions (current month)
+  - [ ] Calculate Monthly Expenses from transactions (current month)
+  - [ ] Update `dashboard/page.tsx` with real data
+  - [ ] Remove placeholder values
 
-- [ ] **Task 4.2.1:** Create category management hooks
-  - [ ] Create `lib/hooks/useCategories.ts` with TanStack Query
-  - [ ] Implement `useCategories()` query hook
-  - [ ] Implement `useCreateCategory()` mutation hook
-  - [ ] Implement `useUpdateCategory()` mutation hook
-  - [ ] Implement `useDeleteCategory()` mutation hook
-  - [ ] Filter categories by type (NEEDS, WANTS, SAVINGS, INCOME)
+### **Milestone 4.2: Category Management** 👷 70% Complete
+
+- [x] **Task 4.2.1:** Create category management hooks ✅
+  - [x] Create `lib/hooks/useCategories.ts` with TanStack Query
+  - [x] Implement `useCategories()` query hook
+  - [x] Implement `useCreateCategory()` mutation hook (with undefined filtering)
+  - [x] Implement `useUpdateCategory()` mutation hook
+  - [x] Implement `useDeleteCategory()` mutation hook
+  - [x] Filter categories by type (NEEDS, WANTS, SAVINGS, INCOME)
 
 - [ ] **Task 4.2.2:** Create category form component
   - [ ] Create `components/forms/CategoryForm.tsx`
@@ -333,17 +357,19 @@ This roadmap outlines the development phases, milestones, and tasks for building
   - [ ] Handle create and edit modes
   - [ ] Show color and icon preview
 
-- [ ] **Task 4.2.3:** Set up default categories
+- [ ] **Task 4.2.3:** Set up default categories ⏳
   - [ ] Create seed data for default categories
   - [ ] Create Cloud Function or migration script to initialize default categories
-  - [ ] Default categories: Transport, Food, Rent, etc.
-  - [ ] Assign appropriate types (NEEDS, WANTS, SAVINGS)
+  - [ ] Default categories: Transport, Food, Rent, Utilities, Entertainment, etc.
+  - [ ] Assign appropriate types (NEEDS, WANTS, SAVINGS, INCOME)
+  - [ ] Auto-assign colors and icons
 
-- [ ] **Task 4.2.4:** Create category management UI
-  - [ ] Add category management section to settings page
+- [ ] **Task 4.2.4:** Create category management UI ⏳
+  - [ ] Create `/categories` page or add to settings
   - [ ] Display categories with color and icon
   - [ ] Add create, edit, delete actions
   - [ ] Show category usage statistics
+  - [ ] Group by type (NEEDS, WANTS, SAVINGS, INCOME)
 
 ### **Milestone 4.3: Transaction Features**
 
@@ -458,7 +484,7 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 - [ ] **Task 6.2.2:** Create budget progress bars
   - [ ] Create `components/widgets/BudgetProgressBar.tsx`
-  - [ ] Calculate percentage: (spent / budget) * 100
+  - [ ] Calculate percentage: (spent / budget) \* 100
   - [ ] Color logic: Green (<75%), Yellow (75-90%), Red (>90%)
   - [ ] Display category name, budget amount, spent amount, percentage
   - [ ] Add tooltip with exact amounts
@@ -904,16 +930,19 @@ This roadmap outlines the development phases, milestones, and tasks for building
 ## **Future Phases (Post-MVP)**
 
 ### **Phase 13: Multi-Currency Support**
+
 - Multi-currency account support
 - Auto-conversion rates
 - Currency exchange tracking
 
 ### **Phase 14: SMS Parsing (Android)**
+
 - SMS transaction parsing
 - Auto-log bank transactions
 - Transaction categorization AI
 
 ### **Phase 15: Collaborative Budgeting**
+
 - Shared budgets for couples
 - Joint account management
 - Expense sharing
@@ -930,7 +959,7 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 ---
 
-**Last Updated:** December 2024  
+**Last Updated:** December 2025  
 **Next Review:** After Phase 2 completion
 
 ---
@@ -940,11 +969,13 @@ This roadmap outlines the development phases, milestones, and tasks for building
 ### **Phase 1: Foundation & Project Setup** - ✅ Completed
 
 **Completed:**
+
 - ✅ Milestone 1.1: Core Dependencies & Package Setup (100%)
 - ✅ Milestone 1.2: Firebase Infrastructure Refactoring (100%)
 - 🚧 Milestone 1.3: UI Foundation & Utilities (33% - utilities.ts created, format.ts and calculations.ts pending)
 
 **Remaining Tasks:**
+
 - Task 1.1.6: Standardize TypeScript versions across all packages
 - Task 1.2.2: Test and deploy Firestore Security Rules
 - Task 1.2.3: Deploy Firestore Indexes
@@ -955,10 +986,12 @@ This roadmap outlines the development phases, milestones, and tasks for building
 ### **Phase 2: Authentication & User Management** - ✅ Completed
 
 **Completed:**
+
 - ✅ Milestone 2.1: Authentication Infrastructure (100%)
 - ✅ Milestone 2.2: User Profile & Onboarding (100%)
 
 **Key Achievements:**
+
 - ✅ Full authentication flow with email/password (Google OAuth removed per user request)
 - ✅ Clean, light-themed split-screen login/signup pages matching design reference
 - ✅ Centered onboarding layout (gradient removed for onboarding screens)
@@ -971,17 +1004,20 @@ This roadmap outlines the development phases, milestones, and tasks for building
 - ✅ Zod v3 alignment across workspace for form validation
 
 **Deferred Items:**
+
 - ⏸️ Email verification page (deferred - not critical for MVP)
 - ⏸️ Onboarding Step 3: Initial Balance Setup (deferred to Phase 3)
 - ⏸️ Account deletion functionality (deferred to post-MVP)
 - ⏸️ Reusable profile form component (current implementation sufficient for MVP)
 
 **Next Steps:**
+
 - ✅ Phase 3: Accounts & Asset Management (In Progress)
 
 ### **Phase 3: Accounts & Asset Management** - 🚧 In Progress
 
 **Completed:**
+
 - ✅ Task 3.1.1: Created account management hooks (`useAccounts`, `useAccount`, `useCreateAccount`, `useUpdateAccount`, `useArchiveAccount`, `useDeleteAccount`)
 - ✅ Task 3.1.2: Created AccountForm component with validation (supports create/edit modes)
 - ✅ Task 3.1.3: Created accounts page with list view, CRUD actions, and empty state
@@ -989,6 +1025,7 @@ This roadmap outlines the development phases, milestones, and tasks for building
 - ✅ Task 3.2.2: Created net worth calculation utilities (`calculateNetWorth`, `calculateBalanceByType`, `getAccountDistribution`)
 
 **Key Features Implemented:**
+
 - ✅ Account CRUD operations with Firestore integration
 - ✅ TanStack Query integration for data fetching and caching
 - ✅ Account types: Cash, Bank, Mobile Money, Savings
@@ -999,8 +1036,9 @@ This roadmap outlines the development phases, milestones, and tasks for building
 - ✅ Optimistic updates and cache invalidation
 
 **Remaining Tasks:**
+
 - ⏳ Task 3.1.4: Implement manual balance reconciliation (deferred - requires transaction system)
 
 **Next Steps:**
-- Begin Phase 4: Transaction Management
 
+- Begin Phase 4: Transaction Management
