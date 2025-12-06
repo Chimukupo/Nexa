@@ -1,12 +1,14 @@
 "use client";
 
-import { Wallet, Building2, Smartphone, PiggyBank, MoreVertical } from "lucide-react";
+import { Wallet, Building2, Smartphone, PiggyBank } from "lucide-react";
 import type { Account } from "@workspace/validators";
 
 interface AccountCardProps {
   account: Account & { id: string };
   onClick?: () => void;
-  onAction?: () => void;
+  onEdit?: () => void;
+  onArchive?: () => void;
+  onDelete?: () => void;
   className?: string;
 }
 
@@ -15,9 +17,16 @@ const ACCOUNT_ICONS = {
   BANK: Building2,
   MOBILE_MONEY: Smartphone,
   SAVINGS: PiggyBank,
-};
+} as const;
 
-export function AccountCard({ account, onClick, onAction, className = "" }: AccountCardProps) {
+export function AccountCard({
+  account,
+  onClick,
+  onEdit,
+  onArchive,
+  onDelete,
+  className = "",
+}: AccountCardProps) {
   const Icon = ACCOUNT_ICONS[account.type] || Wallet;
 
   const formatCurrency = (amount: number) => {
@@ -44,17 +53,6 @@ export function AccountCard({ account, onClick, onAction, className = "" }: Acco
         <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
           <Icon className="w-5 h-5" />
         </div>
-        {onAction && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAction();
-            }}
-            className="w-8 h-8 rounded-lg hover:bg-surface/50 flex items-center justify-center text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <MoreVertical className="w-4 h-4" />
-          </button>
-        )}
       </div>
 
       {/* Account Name & Type */}
@@ -69,6 +67,48 @@ export function AccountCard({ account, onClick, onAction, className = "" }: Acco
       <p className="text-2xl font-bold text-foreground">
         {formatCurrency(account.currentBalance)}
       </p>
+
+      {/* Actions */}
+      {(onEdit || onArchive || onDelete) && (
+        <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+          {onEdit && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              className="hover:text-foreground font-medium"
+            >
+              Edit
+            </button>
+          )}
+          {onArchive && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onArchive();
+              }}
+              className="hover:text-amber-600"
+            >
+              Archive
+            </button>
+          )}
+          {onDelete && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="hover:text-rose-600"
+            >
+              Delete
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Archived Badge */}
       {account.isArchived && (

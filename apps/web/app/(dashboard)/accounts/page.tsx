@@ -2,38 +2,85 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Wallet, Building2, Smartphone, PiggyBank, MoreVertical } from "lucide-react";
-import { useAccounts, useCreateAccount } from "@/lib/hooks/useAccounts";
+import { Plus, Wallet } from "lucide-react";
+import {
+  useAccounts,
+  useCreateAccount,
+  useUpdateAccount,
+  useArchiveAccount,
+  useDeleteAccount,
+} from "@/lib/hooks/useAccounts";
 import { AccountForm } from "@/components/forms/AccountForm";
+import { AccountCard } from "@/components/widgets/AccountCard";
 import { Button } from "@workspace/ui/components/button";
 import type { z } from "zod";
 import { CreateAccountSchema } from "@workspace/validators";
 
 type AccountFormData = z.input<typeof CreateAccountSchema>;
 
+type FormState =
+  | { mode: "create" }
+  | { mode: "edit"; accountId: string }
+  | null;
+
 export default function AccountsPage() {
   const router = useRouter();
   const { data: accounts, isLoading } = useAccounts();
   const createAccount = useCreateAccount();
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const updateAccount = useUpdateAccount();
+  const archiveAccount = useArchiveAccount();
+  const deleteAccount = useDeleteAccount();
 
-  const handleCreateAccount = async (data: AccountFormData) => {
-    await createAccount.mutateAsync(data);
-    setShowCreateForm(false);
+  const [formState, setFormState] = useState<FormState>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const activeAccount =
+    formState && formState.mode === "edit" && accounts
+      ? accounts.find((acc) => acc.id === formState.accountId)
+      : undefined;
+
+  const handleSubmitForm = async (data: AccountFormData) => {
+    setErrorMessage(null);
+    try {
+      if (formState?.mode === "edit" && formState.accountId) {
+        await updateAccount.mutateAsync({ id: formState.accountId, data });
+        setStatusMessage("Account updated successfully.");
+      } else {
+        await createAccount.mutateAsync(data);
+        setStatusMessage("Account created successfully.");
+      }
+      setFormState(null);
+    } catch (error: unknown) {
+      console.error("Failed to save account:", error);
+      setErrorMessage("Something went wrong while saving the account. Please try again.");
+    }
   };
 
-  const getAccountIcon = (type: string) => {
-    switch (type) {
-      case "CASH":
-        return <Wallet className="w-5 h-5" />;
-      case "BANK":
-        return <Building2 className="w-5 h-5" />;
-      case "MOBILE_MONEY":
-        return <Smartphone className="w-5 h-5" />;
-      case "SAVINGS":
-        return <PiggyBank className="w-5 h-5" />;
-      default:
-        return <Wallet className="w-5 h-5" />;
+  const handleArchiveAccount = async (accountId: string) => {
+    setErrorMessage(null);
+    try {
+      await archiveAccount.mutateAsync(accountId);
+      setStatusMessage("Account archived.");
+    } catch (error: unknown) {
+      console.error("Failed to archive account:", error);
+      setErrorMessage("Could not archive the account. Please try again.");
+    }
+  };
+
+  const handleDeleteAccount = async (accountId: string) => {
+    const confirmed = window.confirm(
+      "Deleting an account is permanent and cannot be undone. Are you sure you want to continue?",
+    );
+    if (!confirmed) return;
+
+    setErrorMessage(null);
+    try {
+      await deleteAccount.mutateAsync(accountId);
+      setStatusMessage("Account deleted.");
+    } catch (error: unknown) {
+      console.error("Failed to delete account:", error);
+      setErrorMessage("Could not delete the account. Please try again.");
     }
   };
 
@@ -74,7 +121,11 @@ export default function AccountsPage() {
             </p>
           </div>
           <Button
-            onClick={() => setShowCreateForm(true)}
+            onClick={() => {
+              setFormState({ mode: "create" });
+              setStatusMessage(null);
+              setErrorMessage(null);
+            }}
             className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
@@ -82,17 +133,44 @@ export default function AccountsPage() {
           </Button>
         </div>
 
-        {/* Create Account Form Modal */}
-        {showCreateForm && (
+        {/* Inline feedback */}
+        {(statusMessage || errorMessage) && (
+          <div className="mb-6 space-y-2">
+            {statusMessage && (
+              <div className="rounded-xl bg-emerald-50 border border-emerald-100 px-4 py-3 text-sm text-emerald-700">
+                {statusMessage}
+              </div>
+            )}
+            {errorMessage && (
+              <div className="rounded-xl bg-rose-50 border border-rose-100 px-4 py-3 text-sm text-rose-700">
+                {errorMessage}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Create / Edit Account Form Modal */}
+        {formState && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-surface/90 backdrop-blur-xl rounded-2xl p-8 max-w-lg w-full border border-border/50 shadow-xl">
               <h2 className="text-2xl font-semibold text-foreground mb-6">
-                Create New Account
+                {formState.mode === "create" ? "Create New Account" : "Edit Account"}
               </h2>
               <AccountForm
-                mode="create"
-                onSubmit={handleCreateAccount}
-                onCancel={() => setShowCreateForm(false)}
+                mode={formState.mode}
+                defaultValues={
+                  formState.mode === "edit" && activeAccount
+                    ? {
+                        name: activeAccount.name,
+                        type: activeAccount.type,
+                        currentBalance: activeAccount.currentBalance,
+                        isArchived: activeAccount.isArchived,
+                        currency: activeAccount.currency,
+                      }
+                    : undefined
+                }
+                onSubmit={handleSubmitForm}
+                onCancel={() => setFormState(null)}
               />
             </div>
           </div>
@@ -121,40 +199,18 @@ export default function AccountsPage() {
             {accounts
               .filter((account) => !account.isArchived)
               .map((account) => (
-                <div
+                <AccountCard
                   key={account.id}
-                  className="group relative p-6 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm hover:shadow-lg transition-all cursor-pointer"
+                  account={account}
                   onClick={() => router.push(`/accounts/${account.id}`)}
-                >
-                  {/* Account Icon */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                      {getAccountIcon(account.type)}
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // TODO: Show account actions menu
-                      }}
-                      className="w-8 h-8 rounded-lg hover:bg-surface/50 flex items-center justify-center text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <MoreVertical className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  {/* Account Name & Type */}
-                  <h3 className="text-lg font-semibold text-foreground mb-1">
-                    {account.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4 capitalize">
-                    {account.type.toLowerCase().replace("_", " ")}
-                  </p>
-
-                  {/* Balance */}
-                  <p className="text-2xl font-bold text-foreground">
-                    {formatCurrency(account.currentBalance)}
-                  </p>
-                </div>
+                  onEdit={() => {
+                    setFormState({ mode: "edit", accountId: account.id });
+                    setStatusMessage(null);
+                    setErrorMessage(null);
+                  }}
+                  onArchive={() => handleArchiveAccount(account.id)}
+                  onDelete={() => handleDeleteAccount(account.id)}
+                />
               ))}
           </div>
         ) : (
@@ -170,7 +226,7 @@ export default function AccountsPage() {
               Create your first account to start tracking your finances
             </p>
             <Button
-              onClick={() => setShowCreateForm(true)}
+              onClick={() => setFormState({ mode: "create" })}
               className="flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />

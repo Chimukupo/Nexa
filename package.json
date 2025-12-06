@@ -12,6 +12,8 @@
     "vercel:prod": "vercel --prod"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^20.19.9",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "prettier": "^3.6.2",

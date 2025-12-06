@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useAuth } from "@/lib/contexts/AuthContext";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
 
@@ -54,18 +55,30 @@ export default function DashboardLayout({
               </span>
             </div>
             <nav className="flex gap-3 text-sm font-medium">
-              <a
+              <Link
                 href="/dashboard"
                 className="rounded-full border border-transparent bg-white px-4 py-2 text-slate-900 shadow-sm shadow-slate-200/80 hover:border-primary/40 hover:bg-slate-50"
               >
                 Overview
-              </a>
-              <a
-                href="/dashboard/settings"
+              </Link>
+              <Link
+                href="/accounts"
+                className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-slate-600 shadow-sm hover:text-slate-900"
+              >
+                Accounts
+              </Link>
+              <Link
+                href="/transactions"
+                className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-slate-600 shadow-sm hover:text-slate-900"
+              >
+                Transactions
+              </Link>
+              <Link
+                href="/settings"
                 className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-slate-600 shadow-sm hover:text-slate-900"
               >
                 Settings
-              </a>
+              </Link>
             </nav>
           </div>
         </header>

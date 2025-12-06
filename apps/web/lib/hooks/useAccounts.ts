@@ -104,11 +104,17 @@ export function useCreateAccount() {
       if (!userId) throw new Error("User not authenticated");
 
       const accountsRef = collection(db, "users", userId, "accounts");
-      const docRef = await addDoc(accountsRef, {
-        ...data,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-      });
+      
+      // Filter out undefined values to prevent Firestore errors
+      const cleanData = Object.fromEntries(
+        Object.entries({
+          ...data,
+          createdAt: Timestamp.now(),
+          updatedAt: Timestamp.now(),
+        }).filter(([, value]) => value !== undefined)
+      );
+      
+      const docRef = await addDoc(accountsRef, cleanData);
 
       return docRef.id;
     },
@@ -122,26 +128,33 @@ export function useCreateAccount() {
 /**
  * Updates an existing account
  */
-export function useUpdateAccount(accountId: string) {
+export function useUpdateAccount() {
   const { user } = useAuth();
   const userId = user?.uid;
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: Partial<AccountInput>) => {
+    mutationFn: async ({ id, data }: { id: string; data: Partial<AccountInput> }) => {
       if (!userId) throw new Error("User not authenticated");
 
-      const accountRef = doc(db, "users", userId, "accounts", accountId);
-      await updateDoc(accountRef, {
-        ...data,
-        updatedAt: Timestamp.now(),
-      });
+      const accountRef = doc(db, "users", userId, "accounts", id);
+      
+      // Filter out undefined values to prevent Firestore errors
+      const cleanData = Object.fromEntries(
+        Object.entries({
+          ...data,
+          updatedAt: Timestamp.now(),
+        }).filter(([, value]) => value !== undefined)
+      );
+      
+      await updateDoc(accountRef, cleanData);
     },
-    onSuccess: () => {
+    onSuccess: (_result, variables) => {
       // Invalidate both list and specific account queries
-      queryClient.invalidateQueries({ queryKey: accountKeys.list({ userId: userId! }) });
+      if (!userId) return;
+      queryClient.invalidateQueries({ queryKey: accountKeys.list({ userId }) });
       queryClient.invalidateQueries({
-        queryKey: accountKeys.detail(accountId),
+        queryKey: accountKeys.detail(variables.id),
       });
     },
   });
@@ -150,25 +163,26 @@ export function useUpdateAccount(accountId: string) {
 /**
  * Archives an account (soft delete)
  */
-export function useArchiveAccount(accountId: string) {
+export function useArchiveAccount() {
   const { user } = useAuth();
   const userId = user?.uid;
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (id: string) => {
       if (!userId) throw new Error("User not authenticated");
 
-      const accountRef = doc(db, "users", userId, "accounts", accountId);
+      const accountRef = doc(db, "users", userId, "accounts", id);
       await updateDoc(accountRef, {
         isArchived: true,
         updatedAt: Timestamp.now(),
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.list({ userId: userId! }) });
+    onSuccess: (_result, id) => {
+      if (!userId) return;
+      queryClient.invalidateQueries({ queryKey: accountKeys.list({ userId }) });
       queryClient.invalidateQueries({
-        queryKey: accountKeys.detail(accountId),
+        queryKey: accountKeys.detail(id),
       });
     },
   });
@@ -177,20 +191,24 @@ export function useArchiveAccount(accountId: string) {
 /**
  * Permanently deletes an account
  */
-export function useDeleteAccount(accountId: string) {
+export function useDeleteAccount() {
   const { user } = useAuth();
   const userId = user?.uid;
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (id: string) => {
       if (!userId) throw new Error("User not authenticated");
 
-      const accountRef = doc(db, "users", userId, "accounts", accountId);
+      const accountRef = doc(db, "users", userId, "accounts", id);
       await deleteDoc(accountRef);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.list({ userId: userId! }) });
+    onSuccess: (_result, id) => {
+      if (!userId) return;
+      queryClient.invalidateQueries({ queryKey: accountKeys.list({ userId }) });
+      queryClient.invalidateQueries({
+        queryKey: accountKeys.detail(id),
+      });
     },
   });
 }

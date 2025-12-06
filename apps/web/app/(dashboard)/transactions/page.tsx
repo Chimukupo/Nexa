@@ -1,0 +1,247 @@
+"use client";
+
+import { useState } from "react";
+import { Plus, Filter, ArrowUpRight, ArrowDownLeft, ArrowRightLeft, ArrowRight } from "lucide-react";
+import { format } from "date-fns";
+import {
+  useTransactions,
+  useCreateTransaction,
+  useUpdateTransaction,
+  useDeleteTransaction,
+} from "@/lib/hooks/useTransactions";
+import { useCategories } from "@/lib/hooks/useCategories";
+import { useAccounts } from "@/lib/hooks/useAccounts";
+import { TransactionForm } from "@/components/forms/TransactionForm";
+import { Button } from "@workspace/ui/components/button";
+import type { z } from "zod";
+import { CreateTransactionSchema, TransactionType } from "@workspace/validators";
+
+type TransactionFormData = z.input<typeof CreateTransactionSchema>;
+
+type FormState =
+  | { mode: "create" }
+  | { mode: "edit"; transactionId: string }
+  | null;
+
+export default function TransactionsPage() {
+  const [filterType, setFilterType] = useState<TransactionType | "ALL">("ALL");
+  const { data: transactions, isLoading } = useTransactions({
+    type: filterType === "ALL" ? undefined : filterType,
+  });
+  
+  const { data: categories } = useCategories();
+  const { data: accounts } = useAccounts();
+  
+  const createTransaction = useCreateTransaction();
+  const updateTransaction = useUpdateTransaction();
+  const deleteTransaction = useDeleteTransaction();
+
+  const [formState, setFormState] = useState<FormState>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const activeTransaction =
+    formState && formState.mode === "edit" && transactions
+      ? transactions.find((t) => t.id === formState.transactionId)
+      : undefined;
+
+  const handleSubmitForm = async (data: TransactionFormData) => {
+    try {
+      // Ensure isRecurring has a value (default to false if undefined)
+      const transactionData = {
+        ...data,
+        isRecurring: data.isRecurring ?? false,
+      };
+      
+      if (formState?.mode === "edit" && formState.transactionId) {
+        await updateTransaction.mutateAsync({ id: formState.transactionId, data: transactionData });
+        setStatusMessage("Transaction updated.");
+      } else {
+        await createTransaction.mutateAsync(transactionData);
+        setStatusMessage("Transaction added.");
+      }
+      setFormState(null);
+      // Clear status after 3 seconds
+      setTimeout(() => setStatusMessage(null), 3000);
+    } catch (error) {
+      console.error("Failed to save transaction", error);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this transaction?")) {
+        await deleteTransaction.mutateAsync(id);
+        setStatusMessage("Transaction deleted.");
+        setTimeout(() => setStatusMessage(null), 3000);
+    }
+  };
+
+  const getCategoryName = (id: string) => {
+      return categories?.find(c => c.id === id)?.name || "Uncategorized";
+  };
+  
+  const getAccountName = (id: string) => {
+      return accounts?.find(a => a.id === id)?.name || "Unknown Account";
+  };
+
+  const getTransactionIcon = (type: TransactionType) => {
+      if (type === "INCOME") return <ArrowDownLeft className="w-5 h-5 text-emerald-500" />;
+      if (type === "EXPENSE") return <ArrowUpRight className="w-5 h-5 text-rose-500" />;
+      return <ArrowRightLeft className="w-5 h-5 text-blue-500" />;
+  };
+
+  return (
+    <div className="min-h-screen p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-semibold text-foreground">Transactions</h1>
+            <p className="text-muted-foreground mt-1">
+              Track your income and expenses
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+             <div className="flex p-1 bg-surface border border-border/50 rounded-lg">
+                {(["ALL", "INCOME", "EXPENSE", "TRANSFER"] as const).map(type => (
+                    <button
+                        key={type}
+                        onClick={() => setFilterType(type)}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                            filterType === type 
+                            ? "bg-white text-foreground shadow-sm" 
+                            : "text-muted-foreground hover:bg-white/50"
+                        }`}
+                    >
+                        {type === "ALL" ? "All" : type.charAt(0) + type.slice(1).toLowerCase()}
+                    </button>
+                ))}
+             </div>
+            <Button
+              onClick={() => setFormState({ mode: "create" })}
+              className="flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Add Transaction
+            </Button>
+          </div>
+        </div>
+        
+        {/* Status Toast */}
+        {statusMessage && (
+            <div className="mb-4 p-3 bg-emerald-50 text-emerald-700 text-sm rounded-xl border border-emerald-100 flex items-center justify-center">
+                {statusMessage}
+            </div>
+        )}
+
+        {/* Transactions List */}
+        <div className="bg-surface/50 backdrop-blur-sm border border-border/50 rounded-2xl overflow-hidden shadow-sm">
+            {isLoading ? (
+                 <div className="p-8 text-center text-muted-foreground">Loading transactions...</div>
+            ) : transactions?.length === 0 ? (
+                 <div className="p-16 text-center">
+                     <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                         <Filter className="w-8 h-8 text-muted-foreground/50" />
+                     </div>
+                     <h3 className="text-lg font-medium text-foreground">No transactions found</h3>
+                     <p className="text-muted-foreground mt-1 mb-6">
+                         Get started by adding your first transaction.
+                     </p>
+                     <Button onClick={() => setFormState({ mode: "create" })}>
+                         Create Transaction
+                     </Button>
+                 </div>
+            ) : (
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead className="bg-muted/30 border-b border-border/50">
+                            <tr>
+                                <th className="text-left py-3 px-6 text-xs font-medium text-muted-foreground uppercase">Date</th>
+                                <th className="text-left py-3 px-6 text-xs font-medium text-muted-foreground uppercase">Description</th>
+                                <th className="text-left py-3 px-6 text-xs font-medium text-muted-foreground uppercase">Category</th>
+                                <th className="text-left py-3 px-6 text-xs font-medium text-muted-foreground uppercase">Account</th>
+                                <th className="text-right py-3 px-6 text-xs font-medium text-muted-foreground uppercase">Amount</th>
+                                <th className="px-6"></th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/50">
+                            {transactions?.map((txn) => (
+                                <tr key={txn.id} className="hover:bg-muted/20 transition-colors group">
+                                    <td className="py-4 px-6 text-sm text-foreground whitespace-nowrap">
+                                        <div className="flex items-center gap-2">
+                                            {getTransactionIcon(txn.type)}
+                                            {format(txn.date, "MMM d, yyyy")}
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-6 text-sm text-foreground font-medium">
+                                        {txn.description || "No description"}
+                                        {txn.isRecurring && <span className="ml-2 text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">Recurring</span>}
+                                    </td>
+                                    <td className="py-4 px-6 text-sm text-muted-foreground">
+                                        {txn.categoryId ? getCategoryName(txn.categoryId) : "-"}
+                                    </td>
+                                    <td className="py-4 px-6 text-sm text-muted-foreground">
+                                        {getAccountName(txn.accountId)}
+                                        {txn.type === "TRANSFER" && txn.toAccountId && (
+                                            <span className="flex items-center gap-1 text-xs mt-0.5">
+                                                <ArrowRight className="w-3 h-3" /> {getAccountName(txn.toAccountId)}
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className={`py-4 px-6 text-sm font-bold text-right ${
+                                        txn.type === "INCOME" ? "text-emerald-600" : 
+                                        txn.type === "EXPENSE" ? "text-rose-600" : "text-foreground"
+                                    }`}>
+                                        {txn.type === "EXPENSE" ? "-" : "+"} 
+                                        K {txn.amount.toFixed(2)}
+                                    </td>
+                                    <td className="py-4 px-6 text-right">
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2">
+                                            <button 
+                                                onClick={() => setFormState({ mode: "edit", transactionId: txn.id })}
+                                                className="text-xs font-medium text-muted-foreground hover:text-primary"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDelete(txn.id)}
+                                                className="text-xs font-medium text-muted-foreground hover:text-rose-600"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+
+        {/* Modal */}
+        {formState && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-surface/95 backdrop-blur-xl rounded-2xl p-6 md:p-8 max-w-lg w-full border border-border/50 shadow-2xl max-h-[90vh] overflow-y-auto">
+              <h2 className="text-2xl font-semibold text-foreground mb-6">
+                {formState.mode === "create" ? "Add Transaction" : "Edit Transaction"}
+              </h2>
+              <TransactionForm
+                mode={formState.mode}
+                defaultValues={
+                  formState.mode === "edit" && activeTransaction
+                    ? {
+                        ...activeTransaction,
+                        date: activeTransaction.date, // Hook handles Date object
+                      }
+                    : undefined
+                }
+                onSubmit={handleSubmitForm}
+                onCancel={() => setFormState(null)}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
