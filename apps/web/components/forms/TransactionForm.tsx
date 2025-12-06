@@ -12,7 +12,7 @@ import type { z } from "zod";
 import { useAccounts } from "@/lib/hooks/useAccounts";
 import { useCategories } from "@/lib/hooks/useCategories";
 import { useState } from "react";
-import { ArrowRight, Wallet, CheckCircle2 } from "lucide-react";
+import { Wallet, CheckCircle2 } from "lucide-react";
 
 type TransactionFormData = z.input<typeof CreateTransactionSchema>;
 
@@ -80,7 +80,6 @@ export function TransactionForm({
   const selectedAccountId = watch("accountId");
   const selectedToAccountId = watch("toAccountId");
   const selectedCategoryId = watch("categoryId");
-  const amount = watch("amount");
   const grossAmount = watch("grossAmount");
   const deductions = watch("deductions");
 
