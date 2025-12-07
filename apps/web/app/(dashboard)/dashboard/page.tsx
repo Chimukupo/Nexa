@@ -11,6 +11,7 @@ import { calculateMonthlyIncome, calculateMonthlyExpenses, getCurrentMonthRange 
 import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
+import { IncomeSummary } from "@/components/widgets/IncomeSummary";
 import { useMemo } from "react";
 
 export default function DashboardPage() {
@@ -128,6 +129,13 @@ export default function DashboardPage() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Income Summary Widget */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <IncomeSummary />
+        {/* Placeholder for future widget */}
+        <div />
       </div>
 
       {/* Empty State CTA */}

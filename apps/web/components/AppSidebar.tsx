@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Wallet, Receipt, Tags, Settings, ChevronUp, User2, LogOut } from "lucide-react";
+import { Home, Wallet, Receipt, Tags, Repeat, Settings, ChevronUp, User2, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/contexts/AuthContext";
@@ -45,6 +45,11 @@ const menuItems = [
     title: "Categories",
     url: "/categories",
     icon: Tags,
+  },
+  {
+    title: "Recurring",
+    url: "/recurring",
+    icon: Repeat,
   },
   {
     title: "Settings",
