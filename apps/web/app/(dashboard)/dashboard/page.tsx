@@ -4,15 +4,40 @@ import Link from "next/link";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import { useAccounts } from "@/lib/hooks/useAccounts";
+import { useTransactions } from "@/lib/hooks/useTransactions";
+import { useInitializeCategories } from "@/lib/hooks/useInitializeCategories";
 import { calculateNetWorth } from "@/lib/utils/netWorth";
+import { calculateMonthlyIncome, calculateMonthlyExpenses, getCurrentMonthRange } from "@/lib/utils/monthlyCalculations";
 import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
+import { useMemo } from "react";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const { data: profile } = useUserProfile();
   const { data: accounts, isLoading: isLoadingAccounts } = useAccounts();
+
+  // Initialize default categories for new users
+  useInitializeCategories();
+
+  // Fetch current month's transactions
+  const monthRange = useMemo(() => getCurrentMonthRange(), []);
+  const { data: monthlyTransactions, isLoading: isLoadingTransactions } = useTransactions({
+    startDate: monthRange.startDate,
+    endDate: monthRange.endDate,
+  });
+
+  // Calculate monthly totals
+  const monthlyIncome = useMemo(
+    () => calculateMonthlyIncome(monthlyTransactions || []),
+    [monthlyTransactions]
+  );
+  
+  const monthlyExpenses = useMemo(
+    () => calculateMonthlyExpenses(monthlyTransactions || []),
+    [monthlyTransactions]
+  );
 
   const totalBalance = calculateNetWorth(accounts || []);
   const activeAccounts = accounts?.filter((a) => !a.isArchived) || [];
@@ -65,12 +90,18 @@ export default function DashboardPage() {
             <TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
-              {profile?.currency || "ZMW"} 0.00
-            </div>
-            <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70 mt-1">
-              Coming in Phase 4
-            </p>
+            {isLoadingTransactions ? (
+              <div className="h-10 w-40 animate-pulse rounded-md bg-muted/50" />
+            ) : (
+              <div>
+                <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
+                  {profile?.currency || "ZMW"} {monthlyIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70 mt-1">
+                  {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -83,12 +114,18 @@ export default function DashboardPage() {
             <TrendingDown className="h-4 w-4 text-rose-600 dark:text-rose-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-rose-700 dark:text-rose-300">
-              {profile?.currency || "ZMW"} 0.00
-            </div>
-            <p className="text-xs text-rose-600/70 dark:text-rose-400/70 mt-1">
-              Coming in Phase 4
-            </p>
+            {isLoadingTransactions ? (
+              <div className="h-10 w-40 animate-pulse rounded-md bg-muted/50" />
+            ) : (
+              <div>
+                <div className="text-2xl font-bold text-rose-700 dark:text-rose-300">
+                  {profile?.currency || "ZMW"} {monthlyExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <p className="text-xs text-rose-600/70 dark:text-rose-400/70 mt-1">
+                  {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

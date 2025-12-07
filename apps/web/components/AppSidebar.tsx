@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Wallet, Receipt, Settings, ChevronUp, User2, LogOut } from "lucide-react";
+import { Home, Wallet, Receipt, Tags, Settings, ChevronUp, User2, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/contexts/AuthContext";
@@ -40,6 +40,11 @@ const menuItems = [
     title: "Transactions",
     url: "/transactions",
     icon: Receipt,
+  },
+  {
+    title: "Categories",
+    url: "/categories",
+    icon: Tags,
   },
   {
     title: "Settings",

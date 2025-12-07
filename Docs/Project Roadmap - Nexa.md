@@ -276,13 +276,13 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 ---
 
-## **Phase 4: Transaction Management** 👷 85% Complete
+## **Phase 4: Transaction Management** ✅ 95% Complete
 
 **Goal:** Implement transaction tracking, categorization, and quick entry.
 
 **Estimated Duration:** 2 Sprints
 
-### **Milestone 4.1: Transaction CRUD Operations** 👷 90% Complete
+### **Milestone 4.1: Transaction CRUD Operations** ✅ 100% Complete
 
 - [x] **Task 4.1.1:** Create transaction management hooks ✅
   - [x] Create `lib/hooks/useTransactions.ts` with TanStack Query
@@ -321,24 +321,26 @@ This roadmap outlines the development phases, milestones, and tasks for building
   - [x] Empty state with CTA
   - [x] Color-coded transactions (green=income, red=expense, blue=transfer)
   - [x] Show transfer destination account
-  - [ ] Add date range filter
-  - [ ] Add account filter
-  - [ ] Add category filter
-  - [ ] Add search functionality
+  - [x] Add date range filter (with presets: This Month, Last 3 Months, Custom)
+  - [x] Add account filter
+  - [x] Add category filter
+  - [x] Add search functionality (description and amount)
+  - [x] Active filters display with clear buttons
   - [ ] Show transaction details in expandable rows
 
-- [ ] **Task 4.1.4:** Implement quick add expense (3-click rule) ⏳
-  - [ ] Create quick add expense dialog/modal
-  - [ ] Pre-fill current date and default account
-  - [ ] Show category quick-select buttons
-  - [ ] Minimize form fields for speed
-  - [ ] Add keyboard shortcuts
+- [x] **Task 4.1.4:** Implement quick add expense (3-click rule) ✅
+  - [x] Create quick add expense dialog/modal
+  - [x] Pre-fill current date and default account
+  - [x] Show category quick-select buttons (top 6 categories)
+  - [x] Minimize form fields for speed (amount + category only)
+  - [x] Add keyboard shortcuts (Cmd/Ctrl + E)
+  - [x] Floating action button
 
-- [ ] **Task 4.1.5:** Connect dashboard monthly widgets ⏳
-  - [ ] Calculate Monthly Income from transactions (current month)
-  - [ ] Calculate Monthly Expenses from transactions (current month)
-  - [ ] Update `dashboard/page.tsx` with real data
-  - [ ] Remove placeholder values
+- [x] **Task 4.1.5:** Connect dashboard monthly widgets ✅
+  - [x] Calculate Monthly Income from transactions (current month)
+  - [x] Calculate Monthly Expenses from transactions (current month)
+  - [x] Update `dashboard/page.tsx` with real data
+  - [x] Remove placeholder values
 
 ### **Milestone 4.2: Category Management** 👷 70% Complete
 
@@ -350,26 +352,26 @@ This roadmap outlines the development phases, milestones, and tasks for building
   - [x] Implement `useDeleteCategory()` mutation hook
   - [x] Filter categories by type (NEEDS, WANTS, SAVINGS, INCOME)
 
-- [ ] **Task 4.2.2:** Create category form component
-  - [ ] Create `components/forms/CategoryForm.tsx`
-  - [ ] Form fields: name, type, color (color picker), icon (Lucide icon selector), monthlyBudgetCap
-  - [ ] Use React Hook Form with Zod validation
-  - [ ] Handle create and edit modes
-  - [ ] Show color and icon preview
+- [x] **Task 4.2.2:** Create category form component ✅
+  - [x] Create `components/forms/CategoryForm.tsx`
+  - [x] Form fields: name, type, color (color picker), icon (Lucide icon selector), monthlyBudgetCap
+  - [x] Use React Hook Form with Zod validation
+  - [x] Handle create and edit modes
+  - [x] Show color and icon preview
 
-- [ ] **Task 4.2.3:** Set up default categories ⏳
-  - [ ] Create seed data for default categories
-  - [ ] Create Cloud Function or migration script to initialize default categories
-  - [ ] Default categories: Transport, Food, Rent, Utilities, Entertainment, etc.
-  - [ ] Assign appropriate types (NEEDS, WANTS, SAVINGS, INCOME)
-  - [ ] Auto-assign colors and icons
+- [x] **Task 4.2.3:** Set up default categories ✅
+  - [x] Create seed data for default categories
+  - [x] Create initialization hook for default categories
+  - [x] Default categories: Transport, Food, Rent, Utilities, Entertainment, etc.
+  - [x] Assign appropriate types (NEEDS, WANTS, SAVINGS, INCOME)
+  - [x] Auto-assign colors and icons
 
-- [ ] **Task 4.2.4:** Create category management UI ⏳
-  - [ ] Create `/categories` page or add to settings
-  - [ ] Display categories with color and icon
-  - [ ] Add create, edit, delete actions
-  - [ ] Show category usage statistics
-  - [ ] Group by type (NEEDS, WANTS, SAVINGS, INCOME)
+- [x] **Task 4.2.4:** Create category management UI ✅
+  - [x] Create `/categories` page
+  - [x] Display categories with color and icon
+  - [x] Add create, edit, delete actions
+  - [x] Show category usage statistics (budget caps)
+  - [x] Group by type (NEEDS, WANTS, SAVINGS, INCOME)
 
 ### **Milestone 4.3: Transaction Features**
 

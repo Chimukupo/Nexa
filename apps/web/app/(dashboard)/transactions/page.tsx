@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Filter, ArrowUpRight, ArrowDownLeft, ArrowRightLeft, ArrowRight } from "lucide-react";
+import { Plus, Filter, ArrowUpRight, ArrowDownLeft, ArrowRightLeft, ArrowRight, Search, X } from "lucide-react";
 import { format } from "date-fns";
 import {
   useTransactions,
@@ -37,9 +37,54 @@ type FormState =
   | null;
 
 export default function TransactionsPage() {
+  // Filter states
   const [filterType, setFilterType] = useState<TransactionType | "ALL">("ALL");
-  const { data: transactions, isLoading } = useTransactions({
+  const [filterAccount, setFilterAccount] = useState<string>("");
+  const [filterCategory, setFilterCategory] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [dateRange, setDateRange] = useState<"all" | "month" | "3months" | "custom">("all");
+  const [customStartDate, setCustomStartDate] = useState<Date | null>(null);
+  const [customEndDate, setCustomEndDate] = useState<Date | null>(null);
+
+  // Calculate date range
+  const getDateRange = () => {
+    const now = new Date();
+    switch (dateRange) {
+      case "month":
+        return {
+          startDate: new Date(now.getFullYear(), now.getMonth(), 1),
+          endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59),
+        };
+      case "3months":
+        return {
+          startDate: new Date(now.getFullYear(), now.getMonth() - 2, 1),
+          endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59),
+        };
+      case "custom":
+        return {
+          startDate: customStartDate || undefined,
+          endDate: customEndDate || undefined,
+        };
+      default:
+        return {};
+    }
+  };
+
+  const { data: allTransactions, isLoading } = useTransactions({
     type: filterType === "ALL" ? undefined : filterType,
+    accountId: filterAccount || undefined,
+    categoryId: filterCategory || undefined,
+    ...getDateRange(),
+  });
+
+  // Client-side search filter
+  const transactions = allTransactions?.filter((t) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      t.description?.toLowerCase().includes(query) ||
+      t.amount.toString().includes(query)
+    );
   });
   
   const { data: categories } = useCategories();
@@ -178,6 +223,155 @@ export default function TransactionsPage() {
             </TabsTrigger>
           </TabsList>
         </Tabs>
+
+        {/* Additional Filters */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search transactions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Date Range */}
+          <select
+            value={dateRange}
+            onChange={(e) => setDateRange(e.target.value as typeof dateRange)}
+            className="px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+          >
+            <option value="all">All Time</option>
+            <option value="month">This Month</option>
+            <option value="3months">Last 3 Months</option>
+            <option value="custom">Custom Range</option>
+          </select>
+
+          {/* Account Filter */}
+          <select
+            value={filterAccount}
+            onChange={(e) => setFilterAccount(e.target.value)}
+            className="px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+          >
+            <option value="">All Accounts</option>
+            {accounts?.filter(a => !a.isArchived).map((account) => (
+              <option key={account.id} value={account.id}>
+                {account.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Category Filter */}
+          <select
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+          >
+            <option value="">All Categories</option>
+            {categories?.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Custom Date Range Inputs */}
+        {dateRange === "custom" && (
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={customStartDate ? format(customStartDate, "yyyy-MM-dd") : ""}
+                onChange={(e) => setCustomStartDate(e.target.value ? new Date(e.target.value) : null)}
+                className="w-full px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                End Date
+              </label>
+              <input
+                type="date"
+                value={customEndDate ? format(customEndDate, "yyyy-MM-dd") : ""}
+                onChange={(e) => setCustomEndDate(e.target.value ? new Date(e.target.value) : null)}
+                className="w-full px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Active Filters Display */}
+        {(filterAccount || filterCategory || searchQuery || dateRange !== "all") && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm text-muted-foreground">Active filters:</span>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm hover:bg-primary/20 transition-colors"
+              >
+                Search: "{searchQuery}"
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            {dateRange !== "all" && (
+              <button
+                onClick={() => setDateRange("all")}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm hover:bg-primary/20 transition-colors"
+              >
+                {dateRange === "month" && "This Month"}
+                {dateRange === "3months" && "Last 3 Months"}
+                {dateRange === "custom" && "Custom Range"}
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            {filterAccount && (
+              <button
+                onClick={() => setFilterAccount("")}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm hover:bg-primary/20 transition-colors"
+              >
+                {getAccountName(filterAccount)}
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            {filterCategory && (
+              <button
+                onClick={() => setFilterCategory("")}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm hover:bg-primary/20 transition-colors"
+              >
+                {getCategoryName(filterCategory)}
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setDateRange("all");
+                setFilterAccount("");
+                setFilterCategory("");
+                setCustomStartDate(null);
+                setCustomEndDate(null);
+              }}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+            >
+              Clear all
+            </button>
+          </div>
+        )}
 
         {/* Transactions List */}
         <Card className="rounded-2xl overflow-hidden shadow-sm">

@@ -7,6 +7,7 @@ import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@workspace/ui/components/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Separator } from "@workspace/ui/components/separator";
+import { QuickAddExpense } from "@/components/QuickAddExpense";
 
 export default function DashboardLayout({
   children,
@@ -58,6 +59,7 @@ export default function DashboardLayout({
           </div>
         </div>
       </SidebarInset>
+      <QuickAddExpense />
     </SidebarProvider>
   );
 }
