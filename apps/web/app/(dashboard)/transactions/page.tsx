@@ -16,6 +16,14 @@ import { Button } from "@workspace/ui/components/button";
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 import { Card, CardContent } from "@workspace/ui/components/card";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
+import { DatePicker } from "@/components/ui/DatePicker";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -39,8 +47,8 @@ type FormState =
 export default function TransactionsPage() {
   // Filter states
   const [filterType, setFilterType] = useState<TransactionType | "ALL">("ALL");
-  const [filterAccount, setFilterAccount] = useState<string>("");
-  const [filterCategory, setFilterCategory] = useState<string>("");
+  const [filterAccount, setFilterAccount] = useState<string>("ALL");
+  const [filterCategory, setFilterCategory] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [dateRange, setDateRange] = useState<"all" | "month" | "3months" | "custom">("all");
   const [customStartDate, setCustomStartDate] = useState<Date | null>(null);
@@ -72,8 +80,8 @@ export default function TransactionsPage() {
 
   const { data: allTransactions, isLoading } = useTransactions({
     type: filterType === "ALL" ? undefined : filterType,
-    accountId: filterAccount || undefined,
-    categoryId: filterCategory || undefined,
+    accountId: filterAccount === "ALL" ? undefined : filterAccount,
+    categoryId: filterCategory === "ALL" ? undefined : filterCategory,
     ...getDateRange(),
   });
 
@@ -234,7 +242,7 @@ export default function TransactionsPage() {
               placeholder="Search transactions..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-border/50 bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
             />
             {searchQuery && (
               <button
@@ -247,44 +255,47 @@ export default function TransactionsPage() {
           </div>
 
           {/* Date Range */}
-          <select
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value as typeof dateRange)}
-            className="px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
-          >
-            <option value="all">All Time</option>
-            <option value="month">This Month</option>
-            <option value="3months">Last 3 Months</option>
-            <option value="custom">Custom Range</option>
-          </select>
+          <Select value={dateRange} onValueChange={(value) => setDateRange(value as typeof dateRange)}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select date range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Time</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+              <SelectItem value="3months">Last 3 Months</SelectItem>
+              <SelectItem value="custom">Custom Range</SelectItem>
+            </SelectContent>
+          </Select>
 
           {/* Account Filter */}
-          <select
-            value={filterAccount}
-            onChange={(e) => setFilterAccount(e.target.value)}
-            className="px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
-          >
-            <option value="">All Accounts</option>
-            {accounts?.filter(a => !a.isArchived).map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.name}
-              </option>
-            ))}
-          </select>
+          <Select value={filterAccount} onValueChange={setFilterAccount}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="All Accounts" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All Accounts</SelectItem>
+              {accounts?.filter(a => !a.isArchived).map((account) => (
+                <SelectItem key={account.id} value={account.id!}>
+                  {account.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           {/* Category Filter */}
-          <select
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-            className="px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
-          >
-            <option value="">All Categories</option>
-            {categories?.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+          <Select value={filterCategory} onValueChange={setFilterCategory}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All Categories</SelectItem>
+              {categories?.map((category) => (
+                <SelectItem key={category.id} value={category.id!}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Custom Date Range Inputs */}
@@ -294,29 +305,27 @@ export default function TransactionsPage() {
               <label className="block text-sm font-medium text-foreground mb-2">
                 Start Date
               </label>
-              <input
-                type="date"
-                value={customStartDate ? format(customStartDate, "yyyy-MM-dd") : ""}
-                onChange={(e) => setCustomStartDate(e.target.value ? new Date(e.target.value) : null)}
-                className="w-full px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+              <DatePicker
+                date={customStartDate || undefined}
+                onDateChange={(date) => setCustomStartDate(date || null)}
+                placeholder="Select start date"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 End Date
               </label>
-              <input
-                type="date"
-                value={customEndDate ? format(customEndDate, "yyyy-MM-dd") : ""}
-                onChange={(e) => setCustomEndDate(e.target.value ? new Date(e.target.value) : null)}
-                className="w-full px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+              <DatePicker
+                date={customEndDate || undefined}
+                onDateChange={(date) => setCustomEndDate(date || null)}
+                placeholder="Select end date"
               />
             </div>
           </div>
         )}
 
         {/* Active Filters Display */}
-        {(filterAccount || filterCategory || searchQuery || dateRange !== "all") && (
+        {((filterAccount && filterAccount !== "ALL") || (filterCategory && filterCategory !== "ALL") || searchQuery || dateRange !== "all") && (
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm text-muted-foreground">Active filters:</span>
             {searchQuery && (
@@ -339,18 +348,18 @@ export default function TransactionsPage() {
                 <X className="w-3 h-3" />
               </button>
             )}
-            {filterAccount && (
+            {filterAccount && filterAccount !== "ALL" && (
               <button
-                onClick={() => setFilterAccount("")}
+                onClick={() => setFilterAccount("ALL")}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm hover:bg-primary/20 transition-colors"
               >
                 {getAccountName(filterAccount)}
                 <X className="w-3 h-3" />
               </button>
             )}
-            {filterCategory && (
+            {filterCategory && filterCategory !== "ALL" && (
               <button
-                onClick={() => setFilterCategory("")}
+                onClick={() => setFilterCategory("ALL")}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm hover:bg-primary/20 transition-colors"
               >
                 {getCategoryName(filterCategory)}
@@ -361,8 +370,8 @@ export default function TransactionsPage() {
               onClick={() => {
                 setSearchQuery("");
                 setDateRange("all");
-                setFilterAccount("");
-                setFilterCategory("");
+                setFilterAccount("ALL");
+                setFilterCategory("ALL");
                 setCustomStartDate(null);
                 setCustomEndDate(null);
               }}

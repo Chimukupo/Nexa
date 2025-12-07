@@ -1,11 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Plus, X } from "lucide-react";
 import { useCreateTransaction } from "@/lib/hooks/useTransactions";
 import { useCategories } from "@/lib/hooks/useCategories";
 import { useAccounts } from "@/lib/hooks/useAccounts";
 import { Button } from "@workspace/ui/components/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
 import { toast } from "sonner";
 import * as LucideIcons from "lucide-react";
 
@@ -20,6 +27,7 @@ export function QuickAddExpense() {
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   
   const { data: categories } = useCategories();
   const { data: accounts } = useAccounts();
@@ -30,8 +38,30 @@ export function QuickAddExpense() {
     ?.filter((c) => c.type === "NEEDS" || c.type === "WANTS")
     .slice(0, 6) || [];
 
-  // Get default account (first active account)
-  const defaultAccount = accounts?.find((a) => !a.isArchived);
+  // Get active accounts
+  const activeAccounts = useMemo(() => accounts?.filter((a) => !a.isArchived) || [], [accounts]);
+  
+  // Set default account when accounts load
+  useEffect(() => {
+    if (activeAccounts.length > 0 && !selectedAccountId) {
+      const firstAccountId = activeAccounts[0]?.id;
+      if (firstAccountId) {
+        setSelectedAccountId(firstAccountId);
+      }
+    }
+  }, [activeAccounts, selectedAccountId]);
+
+  const resetForm = useCallback(() => {
+    setAmount("");
+    setSelectedCategoryId("");
+    // Reset to first account
+    if (activeAccounts.length > 0) {
+      const firstAccountId = activeAccounts[0]?.id;
+      if (firstAccountId) {
+        setSelectedAccountId(firstAccountId);
+      }
+    }
+  }, [activeAccounts]);
 
   // Keyboard shortcut: Cmd/Ctrl + E
   useEffect(() => {
@@ -49,17 +79,12 @@ export function QuickAddExpense() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
-
-  const resetForm = () => {
-    setAmount("");
-    setSelectedCategoryId("");
-  };
+  }, [isOpen, resetForm]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!amount || !selectedCategoryId || !defaultAccount) {
+    if (!amount || !selectedCategoryId || !selectedAccountId) {
       toast.error("Please fill in all fields");
       return;
     }
@@ -74,7 +99,7 @@ export function QuickAddExpense() {
       await createTransaction.mutateAsync({
         amount: amountNum,
         type: "EXPENSE",
-        accountId: defaultAccount.id!,
+        accountId: selectedAccountId,
         categoryId: selectedCategoryId,
         date: new Date(),
         description: "",
@@ -187,12 +212,24 @@ export function QuickAddExpense() {
                 </div>
               </div>
 
-              {/* Account Info */}
-              {defaultAccount && (
-                <p className="text-sm text-muted-foreground text-center">
-                  Will be deducted from: <span className="font-medium text-foreground">{defaultAccount.name}</span>
-                </p>
-              )}
+              {/* Account Selection */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Account
+                </label>
+                <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activeAccounts.map((account) => (
+                      <SelectItem key={account.id} value={account.id!}>
+                        {account.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
               {/* Submit Button */}
               <Button

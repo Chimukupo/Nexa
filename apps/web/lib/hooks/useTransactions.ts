@@ -11,7 +11,6 @@ import {
   where,
   orderBy,
   Timestamp,
-  type Query,
   limit,
 } from "firebase/firestore";
 import {
@@ -34,43 +33,54 @@ export function useTransactions(filters?: TransactionFilters) {
     queryFn: async () => {
       if (!userId) throw new Error("User not authenticated");
 
-      let q: Query<Transaction> = query(
-        getTransactionsRef(userId),
-        orderBy("date", "desc")
-      );
+      // Start with base collection reference
+      const baseRef = getTransactionsRef(userId);
+      const constraints = [];
 
-      // Apply Filters
-      if (filters?.startDate) {
-        q = query(q, where("date", ">=", Timestamp.fromDate(filters.startDate)));
-      }
-      
-      if (filters?.endDate) {
-        q = query(q, where("date", "<=", Timestamp.fromDate(filters.endDate)));
-      }
+      // Apply WHERE filters first (Firestore requirement)
+      // NOTE: We skip 'type' filter here to avoid composite index requirement
+      // Type filtering will be done client-side for better performance
 
       if (filters?.accountId) {
-        q = query(q, where("accountId", "==", filters.accountId));
+        constraints.push(where("accountId", "==", filters.accountId));
       }
 
       if (filters?.categoryId) {
-        q = query(q, where("categoryId", "==", filters.categoryId));
+        constraints.push(where("categoryId", "==", filters.categoryId));
       }
 
-      if (filters?.type) {
-        q = query(q, where("type", "==", filters.type));
+      if (filters?.startDate) {
+        constraints.push(where("date", ">=", Timestamp.fromDate(filters.startDate)));
       }
+      
+      if (filters?.endDate) {
+        constraints.push(where("date", "<=", Timestamp.fromDate(filters.endDate)));
+      }
+
+      // Apply ORDER BY after WHERE clauses
+      constraints.push(orderBy("date", "desc"));
       
       // Default limit if no specific date range to prevent fetching everything
       if (!filters?.startDate && !filters?.endDate) {
-          q = query(q, limit(50));
+        constraints.push(limit(50));
       }
+
+      // Construct final query with all constraints
+      const q = query(baseRef, ...constraints);
 
       const snapshot = await getDocs(q);
       
-      return snapshot.docs.map((doc) => ({
+      let results = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       })) as (Transaction & { id: string })[];
+
+      // Apply type filter client-side to avoid composite index requirement
+      if (filters?.type) {
+        results = results.filter((t) => t.type === filters.type);
+      }
+
+      return results;
     },
     enabled: !!userId,
   });

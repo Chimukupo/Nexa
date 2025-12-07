@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import { useCategories, useCreateCategory } from "@/lib/hooks/useCategories";
 import { DEFAULT_CATEGORIES } from "@/lib/data/defaultCategories";
@@ -14,7 +14,7 @@ export function useInitializeCategories() {
   const { data: categories, isLoading } = useCategories();
   const createCategory = useCreateCategory();
   const [isInitializing, setIsInitializing] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
     const initializeCategories = async () => {
@@ -22,12 +22,14 @@ export function useInitializeCategories() {
       // - User not authenticated
       // - Still loading categories
       // - Already initializing
-      // - Already initialized
+      // - Already initialized (via ref)
       // - User already has categories
-      if (!user || isLoading || isInitializing || isInitialized || (categories && categories.length > 0)) {
+      if (!user || isLoading || isInitializing || hasInitialized.current || (categories && categories.length > 0)) {
         return;
       }
 
+      // Mark as initialized BEFORE starting to prevent race conditions
+      hasInitialized.current = true;
       setIsInitializing(true);
 
       try {
@@ -36,20 +38,24 @@ export function useInitializeCategories() {
           await createCategory.mutateAsync(category);
         }
         
-        setIsInitialized(true);
         console.log("✅ Default categories initialized successfully");
       } catch (error) {
         console.error("❌ Failed to initialize default categories:", error);
+        // Reset on error so user can retry
+        hasInitialized.current = false;
       } finally {
         setIsInitializing(false);
       }
     };
 
     initializeCategories();
-  }, [user, categories, isLoading, isInitializing, isInitialized, createCategory]);
+    // IMPORTANT: Do NOT include createCategory in dependencies
+    // It changes on every render and would cause infinite loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, categories, isLoading, isInitializing]);
 
   return {
     isInitializing,
-    isInitialized: isInitialized || (categories && categories.length > 0),
+    isInitialized: hasInitialized.current || (categories && categories.length > 0),
   };
 }
