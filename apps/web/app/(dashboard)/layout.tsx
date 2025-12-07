@@ -2,9 +2,11 @@
 
 import React from "react";
 import { useAuth } from "@/lib/contexts/AuthContext";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@workspace/ui/components/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { Separator } from "@workspace/ui/components/separator";
 
 export default function DashboardLayout({
   children,
@@ -38,56 +40,25 @@ export default function DashboardLayout({
   if (!user) return null;
 
   return (
-    <div className="relative min-h-screen bg-[#f5f5f7] text-slate-900">
-      {/* Subtle light gradient backdrop */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(0,122,255,0.06),_transparent_60%),radial-gradient(circle_at_bottom,_rgba(16,134,136,0.05),_transparent_55%)]" />
-
-      <div className="relative z-10">
-        {/* Header */}
-        <header className="border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-2xl bg-primary text-white shadow-sm shadow-primary/30">
-                <span className="text-sm font-semibold">N</span>
-              </div>
-              <span className="text-base font-semibold tracking-tight text-slate-900">
-                Nexa
-              </span>
-            </div>
-            <nav className="flex gap-3 text-sm font-medium">
-              <Link
-                href="/dashboard"
-                className="rounded-full border border-transparent bg-white px-4 py-2 text-slate-900 shadow-sm shadow-slate-200/80 hover:border-primary/40 hover:bg-slate-50"
-              >
-                Overview
-              </Link>
-              <Link
-                href="/accounts"
-                className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-slate-600 shadow-sm hover:text-slate-900"
-              >
-                Accounts
-              </Link>
-              <Link
-                href="/transactions"
-                className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-slate-600 shadow-sm hover:text-slate-900"
-              >
-                Transactions
-              </Link>
-              <Link
-                href="/settings"
-                className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-slate-600 shadow-sm hover:text-slate-900"
-              >
-                Settings
-              </Link>
-            </nav>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        {/* Header with trigger */}
+        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
           </div>
         </header>
 
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          {children}
-        </main>
-      </div>
-    </div>
+        {/* Main content */}
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="min-h-[calc(100vh-4rem)] flex-1">
+            {children}
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
 

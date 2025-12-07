@@ -13,6 +13,19 @@ import { useCategories } from "@/lib/hooks/useCategories";
 import { useAccounts } from "@/lib/hooks/useAccounts";
 import { TransactionForm } from "@/components/forms/TransactionForm";
 import { Button } from "@workspace/ui/components/button";
+import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
+import { Card, CardContent } from "@workspace/ui/components/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog";
+import { toast } from "sonner";
 import type { z } from "zod";
 import { CreateTransactionSchema, TransactionType } from "@workspace/validators";
 
@@ -37,7 +50,8 @@ export default function TransactionsPage() {
   const deleteTransaction = useDeleteTransaction();
 
   const [formState, setFormState] = useState<FormState>(null);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
 
   const activeTransaction =
     formState && formState.mode === "edit" && transactions
@@ -54,24 +68,29 @@ export default function TransactionsPage() {
       
       if (formState?.mode === "edit" && formState.transactionId) {
         await updateTransaction.mutateAsync({ id: formState.transactionId, data: transactionData });
-        setStatusMessage("Transaction updated.");
+        toast.success("Transaction updated successfully");
       } else {
         await createTransaction.mutateAsync(transactionData);
-        setStatusMessage("Transaction added.");
+        toast.success("Transaction added successfully");
       }
       setFormState(null);
-      // Clear status after 3 seconds
-      setTimeout(() => setStatusMessage(null), 3000);
     } catch (error) {
       console.error("Failed to save transaction", error);
+      toast.error("Failed to save transaction. Please try again.");
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this transaction?")) {
-        await deleteTransaction.mutateAsync(id);
-        setStatusMessage("Transaction deleted.");
-        setTimeout(() => setStatusMessage(null), 3000);
+  const handleDelete = async () => {
+    if (!transactionToDelete) return;
+    
+    try {
+      await deleteTransaction.mutateAsync(transactionToDelete);
+      toast.success("Transaction deleted successfully");
+      setDeleteDialogOpen(false);
+      setTransactionToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete transaction", error);
+      toast.error("Failed to delete transaction. Please try again.");
     }
   };
 
@@ -90,10 +109,9 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="space-y-6 py-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold text-foreground">Transactions</h1>
             <p className="text-muted-foreground mt-1">
@@ -101,21 +119,6 @@ export default function TransactionsPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-             <div className="flex p-1 bg-surface border border-border/50 rounded-lg">
-                {(["ALL", "INCOME", "EXPENSE", "TRANSFER"] as const).map(type => (
-                    <button
-                        key={type}
-                        onClick={() => setFilterType(type)}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
-                            filterType === type 
-                            ? "bg-white text-foreground shadow-sm" 
-                            : "text-muted-foreground hover:bg-white/50"
-                        }`}
-                    >
-                        {type === "ALL" ? "All" : type.charAt(0) + type.slice(1).toLowerCase()}
-                    </button>
-                ))}
-             </div>
             <Button
               onClick={() => setFormState({ mode: "create" })}
               className="flex items-center gap-2"
@@ -125,16 +128,60 @@ export default function TransactionsPage() {
             </Button>
           </div>
         </div>
-        
-        {/* Status Toast */}
-        {statusMessage && (
-            <div className="mb-4 p-3 bg-emerald-50 text-emerald-700 text-sm rounded-xl border border-emerald-100 flex items-center justify-center">
-                {statusMessage}
-            </div>
-        )}
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Transaction?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this transaction? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setTransactionToDelete(null)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-white hover:bg-destructive/90">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Filter Tabs */}
+        <Tabs value={filterType} onValueChange={(value) => setFilterType(value as TransactionType | "ALL")}>
+          <TabsList className="bg-card p-1 rounded-xl shadow-sm border">
+            <TabsTrigger 
+                value="ALL" 
+                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg transition-all"
+            >
+                All
+            </TabsTrigger>
+            <TabsTrigger 
+                value="INCOME" 
+                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg transition-all"
+            >
+                Income
+            </TabsTrigger>
+            <TabsTrigger 
+                value="EXPENSE" 
+                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg transition-all"
+            >
+                Expense
+            </TabsTrigger>
+            <TabsTrigger 
+                value="TRANSFER" 
+                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg transition-all"
+            >
+                Transfer
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         {/* Transactions List */}
-        <div className="bg-surface/50 backdrop-blur-sm border border-border/50 rounded-2xl overflow-hidden shadow-sm">
+        <Card className="rounded-2xl overflow-hidden shadow-sm">
+           <CardContent className="p-0">
             {isLoading ? (
                  <div className="p-8 text-center text-muted-foreground">Loading transactions...</div>
             ) : transactions?.length === 0 ? (
@@ -203,7 +250,10 @@ export default function TransactionsPage() {
                                                 Edit
                                             </button>
                                             <button 
-                                                onClick={() => handleDelete(txn.id)}
+                                                onClick={() => {
+                                                  setTransactionToDelete(txn.id);
+                                                  setDeleteDialogOpen(true);
+                                                }}
                                                 className="text-xs font-medium text-muted-foreground hover:text-rose-600"
                                             >
                                                 Delete
@@ -216,12 +266,13 @@ export default function TransactionsPage() {
                     </table>
                 </div>
             )}
-        </div>
+            </CardContent>
+        </Card>
 
         {/* Modal */}
         {formState && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-surface/95 backdrop-blur-xl rounded-2xl p-6 md:p-8 max-w-lg w-full border border-border/50 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-card rounded-2xl p-6 md:p-8 max-w-lg w-full border border-border/50 shadow-2xl max-h-[90vh] overflow-y-auto">
               <h2 className="text-2xl font-semibold text-foreground mb-6">
                 {formState.mode === "create" ? "Add Transaction" : "Edit Transaction"}
               </h2>
@@ -241,7 +292,6 @@ export default function TransactionsPage() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }

@@ -37,8 +37,8 @@ export default function SignupPage() {
 
   const onSubmit = async (data: SignupFormValues) => {
     try {
-      await signUpWithEmail(data.email, data.password);
-      // TODO: Update user profile with name
+      await signUpWithEmail(data.email, data.password, data.name);
+      // Profile update is now handled in AuthContext
       router.push("/dashboard");
     } catch (error: unknown) {
       console.error("Signup error:", error);
