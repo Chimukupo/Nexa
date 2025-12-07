@@ -94,8 +94,8 @@ export const UpdateCategorySchema = CategoryBaseSchema.partial();
 const TransactionShape = z.object({
   amount: z.coerce.number().positive("Amount must be greater than 0"),
   type: TransactionTypeEnum,
-  accountId: z.string().min(1),
-  categoryId: z.string().min(1),
+  accountId: z.string().min(1, "Account is required"),
+  categoryId: z.string().optional(), // Make optional here, enforce in refinement
   date: z.coerce.date(),
   description: z.string().max(500).optional(),
   notes: z.string().max(1000).optional(),
@@ -113,6 +113,15 @@ const transactionRefinements = (
   data: Record<string, unknown>,
   ctx: z.RefinementCtx,
 ) => {
+  // Enforce Category for INCOME and EXPENSE
+  if ((data.type === "INCOME" || data.type === "EXPENSE") && !data.categoryId) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Category is required",
+      path: ["categoryId"],
+    });
+  }
+
   // Only validate if type is provided (for partial schemas)
   if (data.type === "TRANSFER") {
     if (!data.toAccountId) {
