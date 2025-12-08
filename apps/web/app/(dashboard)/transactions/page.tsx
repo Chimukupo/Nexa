@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Plus, Filter, ArrowUpRight, ArrowDownLeft, ArrowRightLeft, ArrowRight, Search, X } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -44,7 +44,7 @@ type FormState =
   | { mode: "edit"; transactionId: string }
   | null;
 
-export default function TransactionsPage() {
+export default function TransactionsPage(): React.JSX.Element {
   // Filter states
   const [filterType, setFilterType] = useState<TransactionType | "ALL">("ALL");
   const [filterAccount, setFilterAccount] = useState<string>("ALL");
