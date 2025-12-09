@@ -1,8 +1,8 @@
 # **Project Roadmap: Nexa**
 
 **Version:** 1.1  
-**Last Updated:** December 6, 2025  
-**Status:** Active Development (Phases 1-3 Complete, Phase 4 In Progress)  
+**Last Updated:** December 09, 2025  
+**Status:** Active Development (Phases 1-6 Complete, Phase 7 Pending)  
 **Development Methodology:** Agile (Sprint-based)
 
 ---
@@ -470,62 +470,62 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 ### **Milestone 6.1: Budget Templates**
 
-- [ ] **Task 6.1.1:** Implement Zero-Based Budgeting
-  - [ ] Create `lib/utils/budget.ts` utilities
-  - [ ] Calculate: Income - Expenses = 0
-  - [ ] Create budget allocation form
-  - [ ] Display budget vs actual comparison
+- [x] **Task 6.1.1:** Implement Zero-Based Budgeting
+  - [x] Create `lib/utils/budget.ts` utilities
+  - [x] Calculate: Income - Expenses = 0
+  - [x] Create budget allocation form
+  - [x] Display budget vs actual comparison
 
-- [ ] **Task 6.1.2:** Implement 50/30/20 Rule
-  - [ ] Create `lib/utils/fiftyThirtyTwenty.ts` calculator
-  - [ ] Auto-calculate split: 50% Needs, 30% Wants, 20% Savings
-  - [ ] Base calculation on logged Net Income
-  - [ ] Create budget template selector
-  - [ ] Apply template to categories
+- [x] **Task 6.1.2:** Implement 50/30/20 Rule
+  - [x] Create `lib/utils/fiftyThirtyTwenty.ts` calculator
+  - [x] Auto-calculate split: 50% Needs, 30% Wants, 20% Savings
+  - [x] Base calculation on logged Net Income
+  - [x] Create budget template selector
+  - [x] Apply template to categories
 
-- [ ] **Task 6.1.3:** Create budget setup page
-  - [ ] Create `app/(dashboard)/budget/page.tsx`
-  - [ ] Display budget template selection
-  - [ ] Show budget allocation breakdown
-  - [ ] Allow manual adjustments
-  - [ ] Save budget configuration
+- [x] **Task 6.1.3:** Create budget setup page
+  - [x] Create `app/(dashboard)/budget/page.tsx`
+  - [x] Display budget template selection
+  - [x] Show budget allocation breakdown
+  - [x] Allow manual adjustments
+  - [x] Save budget configuration
 
 ### **Milestone 6.2: Category Budget Caps**
 
-- [ ] **Task 6.2.1:** Implement category budget limits
-  - [ ] Add `monthlyBudgetCap` to CategorySchema (already in schema)
-  - [ ] Create budget cap management UI
-  - [ ] Set budget limits per category
-  - [ ] Display budget caps in category management
+- [x] **Task 6.2.1:** Implement category budget limits
+  - [x] Add `monthlyBudgetCap` to CategorySchema (already in schema)
+  - [x] Create budget cap management UI
+  - [x] Set budget limits per category
+  - [x] Display budget caps in category management
 
-- [ ] **Task 6.2.2:** Create budget progress bars
-  - [ ] Create `components/widgets/BudgetProgressBar.tsx`
-  - [ ] Calculate percentage: (spent / budget) \* 100
-  - [ ] Color logic: Green (<75%), Yellow (75-90%), Red (>90%)
-  - [ ] Display category name, budget amount, spent amount, percentage
-  - [ ] Add tooltip with exact amounts
-  - [ ] Implement segmented pill design per UI spec
+- [x] **Task 6.2.2:** Create budget progress bars
+  - [x] Create `components/widgets/BudgetProgressBar.tsx`
+  - [x] Calculate percentage: (spent / budget) \* 100
+  - [x] Color logic: Green (<75%), Yellow (75-90%), Red (>90%)
+  - [x] Display category name, budget amount, spent amount, percentage
+  - [x] Add tooltip with exact amounts
+  - [x] Implement segmented pill design per UI spec
 
-- [ ] **Task 6.2.3:** Create budget tracker widget
-  - [ ] Create `components/widgets/BudgetTracker.tsx`
-  - [ ] Display segmented progress bar per UI spec
-  - [ ] Show categories: Housing (Purple), Food (Orange), Fun (Pink)
-  - [ ] Transform budget allocations into percentage segments
-  - [ ] Display legend with category name, amount, percentage
+- [x] **Task 6.2.3:** Create budget tracker widget
+  - [x] Create `components/widgets/BudgetTracker.tsx`
+  - [x] Display segmented progress bar per UI spec
+  - [x] Show categories: Housing (Purple), Food (Orange), Fun (Pink)
+  - [x] Transform budget allocations into percentage segments
+  - [x] Display legend with category name, amount, percentage
 
 ### **Milestone 6.3: Budget Dashboard**
 
-- [ ] **Task 6.3.1:** Create budget overview page
-  - [ ] Display all categories with progress bars
-  - [ ] Show total budget vs total spent
-  - [ ] Show remaining budget
-  - [ ] Add filter by category type (NEEDS, WANTS, SAVINGS)
+- [x] **Task 6.3.1:** Create budget overview page
+  - [x] Display all categories with progress bars
+  - [x] Show total budget vs total spent
+  - [x] Show remaining budget
+  - [x] Add filter by category type (NEEDS, WANTS, SAVINGS)
 
-- [ ] **Task 6.3.2:** Implement budget alerts
-  - [ ] Create alert system for budget thresholds
-  - [ ] Show warning when category exceeds 75%
-  - [ ] Show critical alert when category exceeds 90%
-  - [ ] Display alerts in dashboard
+- [x] **Task 6.3.2:** Implement budget alerts
+  - [x] Create alert system for budget thresholds
+  - [x] Show warning when category exceeds 75%
+  - [x] Show critical alert when category exceeds 90%
+  - [x] Display alerts in dashboard
 
 ---
 
