@@ -11,7 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import {
-  LineChart,
+  AreaChart,
+  Area,
   Line,
   XAxis,
   YAxis,
@@ -19,7 +20,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  Area,
 } from "recharts";
 import { format, subDays, eachDayOfInterval, startOfDay } from "date-fns";
 import type { Transaction } from "@workspace/validators";
@@ -53,16 +53,20 @@ export function SpendingChart({
     const dailySpending = new Map<string, number>();
     const previousDailySpending = new Map<string, number>();
     
+    // Process current month transactions
     transactions.forEach((t) => {
-      if (t.type === "EXPENSE") {
-        const dayKey = format(new Date(t.date), "yyyy-MM-dd");
+      if (t.type === "EXPENSE" && t.date) {
+        const transactionDate = new Date(t.date);
+        const dayKey = format(transactionDate, "yyyy-MM-dd");
         dailySpending.set(dayKey, (dailySpending.get(dayKey) || 0) + t.amount);
       }
     });
 
+    // Process previous month transactions
     previousMonthTransactions.forEach((t) => {
-      if (t.type === "EXPENSE") {
-        const dayKey = format(new Date(t.date), "yyyy-MM-dd");
+      if (t.type === "EXPENSE" && t.date) {
+        const transactionDate = new Date(t.date);
+        const dayKey = format(transactionDate, "yyyy-MM-dd");
         previousDailySpending.set(dayKey, (previousDailySpending.get(dayKey) || 0) + t.amount);
       }
     });
@@ -71,7 +75,7 @@ export function SpendingChart({
     let cumulativeThis = 0;
     let cumulativeLast = 0;
     
-    return dateRange.map((date, index) => {
+    const data = dateRange.map((date, index) => {
       const dayKey = format(date, "yyyy-MM-dd");
       const dayLabel = format(date, "d");
       
@@ -85,6 +89,17 @@ export function SpendingChart({
         lastMonth: Math.round(cumulativeLast * 100) / 100,
       };
     });
+
+    console.log("SpendingChart data:", {
+      transactionCount: transactions.length,
+      expenseCount: transactions.filter(t => t.type === "EXPENSE").length,
+      dateRange: `${format(startDate, "MMM d")} - ${format(today, "MMM d")}`,
+      dataPoints: data.length,
+      sampleData: data.slice(0, 3),
+      finalTotal: cumulativeThis,
+    });
+
+    return data;
   }, [transactions, previousMonthTransactions, timeRange]);
 
   // Calculate totals
@@ -158,7 +173,7 @@ export function SpendingChart({
       <CardContent>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+            <AreaChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
               <defs>
                 <linearGradient id="spendingGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
@@ -212,7 +227,7 @@ export function SpendingChart({
                 name="Last Month"
                 dot={false}
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       </CardContent>

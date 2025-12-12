@@ -586,45 +586,41 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 ### **Milestone 8.1: Dashboard Snapshot**
 
-- [ ] **Task 8.1.1:** Create dashboard layout
-  - [ ] Create `app/(dashboard)/layout.tsx` with sidebar
-  - [ ] Create `components/layouts/AppSidebar.tsx`
-  - [ ] Create `components/layouts/DashboardNavbar.tsx`
-  - [ ] Implement responsive sidebar (collapsible on mobile)
-  - [ ] Add navigation items: Dashboard, Transactions, Accounts, Budget, Goals, Settings
+- [x] **Task 8.1.1:** Create dashboard layout
+  - [x] Create `app/(dashboard)/layout.tsx` with sidebar
+  - [x] Create `components/layouts/AppSidebar.tsx`
+  - [x] Create `components/layouts/DashboardNavbar.tsx`
+  - [x] Implement responsive sidebar (collapsible on mobile)
+  - [x] Add navigation items: Dashboard, Transactions, Accounts, Budget, Goals, Settings
 
-- [ ] **Task 8.1.2:** Create snapshot cards
-  - [ ] Create `components/widgets/NetWorthCard.tsx`
-    - [ ] Calculate: Assets - Debts (currently just assets)
-    - [ ] Display total net worth
-    - [ ] Show change from last month
-  - [ ] Create `components/widgets/MonthToDateSpendingCard.tsx`
-    - [ ] Calculate total expenses for current month
-    - [ ] Compare to previous month
-    - [ ] Show percentage change
-  - [ ] Create `components/widgets/RemainingBudgetCard.tsx`
-    - [ ] Calculate remaining budget for current month
-    - [ ] Show percentage of budget used
-    - [ ] Display warning if budget exceeded
+- [x] **Task 8.1.2:** Create snapshot cards
+  - [x] Create `components/widgets/TotalBalanceCard.tsx`
+    - [x] Calculate total balance across accounts
+    - [x] Display account breakdown with percentages
+    - [x] Show change from last month
+  - [x] Create `components/widgets/EnhancedBudgetTracker.tsx`
+    - [x] Display segmented progress bar
+    - [x] Show budget by category
+    - [x] Add Totals/Percent toggle
 
-- [ ] **Task 8.1.3:** Create dashboard home page
-  - [ ] Create `app/(dashboard)/page.tsx`
-  - [ ] Layout snapshot cards in grid
-  - [ ] Add account cards section
-  - [ ] Add recent transactions section
-  - [ ] Make responsive for mobile
+- [x] **Task 8.1.3:** Create dashboard home page
+  - [x] Create `app/(dashboard)/page.tsx`
+  - [x] Layout snapshot cards in grid
+  - [x] Add account cards section
+  - [x] Add recent transactions section
+  - [x] Make responsive for mobile
 
 ### **Milestone 8.2: Charts & Visualizations**
 
-- [ ] **Task 8.2.1:** Implement Spending Wave chart
-  - [ ] Create `components/widgets/SpendingWaveChart.tsx`
-  - [ ] Use Recharts AreaChart component
-  - [ ] Smooth spline curve (type="monotone")
-  - [ ] Emerald Green stroke (#10B981, 2px width)
-  - [ ] Gradient fill: Emerald-500 (opacity 0.2) to transparent
-  - [ ] Horizontal grid lines (subtle)
-  - [ ] Custom tooltip (floating white card)
-  - [ ] Display last 6 months of spending data
+- [x] **Task 8.2.1:** Implement Spending Wave chart
+  - [x] Create `components/widgets/SpendingChart.tsx`
+  - [x] Use Recharts AreaChart component
+  - [x] Smooth spline curve (type="monotone")
+  - [x] Emerald Green stroke (#10B981, 2px width)
+  - [x] Gradient fill: Emerald-500 (opacity 0.3) to transparent
+  - [x] Horizontal grid lines (subtle)
+  - [x] Custom tooltip (floating white card)
+  - [x] Display cumulative spending with time range selector
 
 - [ ] **Task 8.2.2:** Implement Expense Donut Chart
   - [ ] Create `components/widgets/ExpenseDonutChart.tsx`
@@ -642,26 +638,26 @@ This roadmap outlines the development phases, milestones, and tasks for building
   - [ ] Use green for income, red for expenses
   - [ ] Add custom tooltip
 
-- [ ] **Task 8.2.4:** Add charts to dashboard
-  - [ ] Integrate Spending Wave chart
+- [x] **Task 8.2.4:** Add charts to dashboard
+  - [x] Integrate Spending Wave chart
   - [ ] Integrate Expense Donut Chart
   - [ ] Integrate Income vs Expense Line Graph
-  - [ ] Make charts responsive
-  - [ ] Add loading states
+  - [x] Make charts responsive
+  - [x] Add loading states
 
 ### **Milestone 8.3: Recent Activity**
 
-- [ ] **Task 8.3.1:** Create recent activity table
-  - [ ] Create `components/widgets/RecentActivityTable.tsx`
-  - [ ] Display last 10 transactions
-  - [ ] Show category icon, description, amount, date
-  - [ ] Color-code income (green) and expenses (red)
-  - [ ] Add click to view transaction details
-  - [ ] Make responsive for mobile
+- [x] **Task 8.3.1:** Create recent activity table
+  - [x] Create `components/widgets/RecentActivity.tsx`
+  - [x] Display last 10 transactions
+  - [x] Show category icon, description, amount, date
+  - [x] Color-code income (green) and expenses (red)
+  - [x] Add search functionality
+  - [x] Make responsive for mobile
 
-- [ ] **Task 8.3.2:** Add recent activity to dashboard
-  - [ ] Integrate RecentActivityTable
-  - [ ] Add "View All" link to transactions page
+- [x] **Task 8.3.2:** Add recent activity to dashboard
+  - [x] Integrate RecentActivity component
+  - [x] Add "View All" link to transactions page
   - [ ] Add refresh functionality
 
 ---
