@@ -1,142 +1,137 @@
 "use client";
 
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import { useAccounts } from "@/lib/hooks/useAccounts";
 import { useTransactions } from "@/lib/hooks/useTransactions";
+import { useCategories } from "@/lib/hooks/useCategories";
 import { useInitializeCategories } from "@/lib/hooks/useInitializeCategories";
 import { calculateNetWorth } from "@/lib/utils/netWorth";
-import { calculateMonthlyIncome, calculateMonthlyExpenses, getCurrentMonthRange } from "@/lib/utils/monthlyCalculations";
-import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import { calculateMonthlyIncome, calculateMonthlyExpenses, getCurrentMonthRange, getPreviousMonthRange } from "@/lib/utils/monthlyCalculations";
+import { Wallet } from "lucide-react";
+import { Card, CardContent, CardDescription, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
-import { IncomeSummary } from "@/components/widgets/IncomeSummary";
-import { useMemo } from "react";
 
-export default function DashboardPage() {
+// Widgets
+import { TotalBalanceCard } from "@/components/widgets/TotalBalanceCard";
+import { EnhancedBudgetTracker } from "@/components/widgets/EnhancedBudgetTracker";
+import { SpendingChart } from "@/components/widgets/SpendingChart";
+import { RecentActivity } from "@/components/widgets/RecentActivity";
+
+export default function DashboardPage(): React.JSX.Element {
   const { user } = useAuth();
   const { data: profile } = useUserProfile();
   const { data: accounts, isLoading: isLoadingAccounts } = useAccounts();
+  const { data: categories } = useCategories();
 
   // Initialize default categories for new users
   useInitializeCategories();
 
   // Fetch current month's transactions
-  const monthRange = useMemo(() => getCurrentMonthRange(), []);
-  const { data: monthlyTransactions, isLoading: isLoadingTransactions } = useTransactions({
-    startDate: monthRange.startDate,
-    endDate: monthRange.endDate,
+  const currentMonthRange = useMemo(() => getCurrentMonthRange(), []);
+  const previousMonthRange = useMemo(() => getPreviousMonthRange(), []);
+  
+  const { data: currentMonthTransactions, isLoading: isLoadingCurrentTransactions } = useTransactions({
+    startDate: currentMonthRange.startDate,
+    endDate: currentMonthRange.endDate,
+  });
+
+  const { data: previousMonthTransactions } = useTransactions({
+    startDate: previousMonthRange.startDate,
+    endDate: previousMonthRange.endDate,
   });
 
   // Calculate monthly totals
   const monthlyIncome = useMemo(
-    () => calculateMonthlyIncome(monthlyTransactions || []),
-    [monthlyTransactions]
+    () => calculateMonthlyIncome(currentMonthTransactions || []),
+    [currentMonthTransactions]
   );
   
   const monthlyExpenses = useMemo(
-    () => calculateMonthlyExpenses(monthlyTransactions || []),
-    [monthlyTransactions]
+    () => calculateMonthlyExpenses(currentMonthTransactions || []),
+    [currentMonthTransactions]
   );
 
-  const totalBalance = calculateNetWorth(accounts || []);
+  const previousMonthBalance = useMemo(() => {
+    const prevIncome = calculateMonthlyIncome(previousMonthTransactions || []);
+    const prevExpenses = calculateMonthlyExpenses(previousMonthTransactions || []);
+    return prevIncome - prevExpenses;
+  }, [previousMonthTransactions]);
+
   const activeAccounts = accounts?.filter((a) => !a.isArchived) || [];
   const hasAccounts = activeAccounts.length > 0;
 
+  // Prepare budget tracker data
+  const budgetCategories = useMemo(() => {
+    if (!categories || !currentMonthTransactions) return [];
+    
+    const spendingByCategory = new Map<string, number>();
+    currentMonthTransactions
+      .filter((t) => t.type === "EXPENSE")
+      .forEach((t) => {
+        const catId = t.categoryId || "uncategorized";
+        spendingByCategory.set(catId, (spendingByCategory.get(catId) || 0) + t.amount);
+      });
+
+    return categories
+      .filter((c) => c.monthlyBudgetCap && c.monthlyBudgetCap > 0)
+      .map((c) => ({
+        id: c.id!,
+        name: c.name,
+        color: c.color,
+        budgeted: c.monthlyBudgetCap!,
+        spent: spendingByCategory.get(c.id!) || 0,
+      }));
+  }, [categories, currentMonthTransactions]);
+
+  // Currency symbol
+  const currencySymbol = profile?.currency === "ZMW" ? "K" : profile?.currency || "K";
+
   return (
-    <div className="space-y-8 py-6">
-      {/* Welcome Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">
-            Welcome back, {profile?.displayName || user?.displayName || "User"}!
-          </CardTitle>
-          <CardDescription>
-            Here's what's happening with your finances today.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
-      {/* Snapshot Cards */}
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* Total Balance Card */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {isLoadingAccounts ? (
-              <div className="h-10 w-40 animate-pulse rounded-md bg-muted/50" />
-            ) : (
-              <div>
-                <div className="text-2xl font-bold">
-                  {profile?.currency || "ZMW"} {totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {activeAccounts.length} active {activeAccounts.length === 1 ? 'account' : 'accounts'}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Monthly Income Card */}
-        <Card className="border-emerald-200 dark:border-emerald-900">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-              Monthly Income
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-          </CardHeader>
-          <CardContent>
-            {isLoadingTransactions ? (
-              <div className="h-10 w-40 animate-pulse rounded-md bg-muted/50" />
-            ) : (
-              <div>
-                <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
-                  {profile?.currency || "ZMW"} {monthlyIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </div>
-                <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70 mt-1">
-                  {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Monthly Expenses Card */}
-        <Card className="border-rose-200 dark:border-rose-900">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-rose-700 dark:text-rose-300">
-              Monthly Expenses
-            </CardTitle>
-            <TrendingDown className="h-4 w-4 text-rose-600 dark:text-rose-400" />
-          </CardHeader>
-          <CardContent>
-            {isLoadingTransactions ? (
-              <div className="h-10 w-40 animate-pulse rounded-md bg-muted/50" />
-            ) : (
-              <div>
-                <div className="text-2xl font-bold text-rose-700 dark:text-rose-300">
-                  {profile?.currency || "ZMW"} {monthlyExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </div>
-                <p className="text-xs text-rose-600/70 dark:text-rose-400/70 mt-1">
-                  {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+    <div className="space-y-6 py-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Welcome back, {profile?.displayName || user?.displayName || "User"}!
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Here's what's happening with your finances today.
+        </p>
       </div>
 
-      {/* Income Summary Widget */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <IncomeSummary />
-        {/* Placeholder for future widget */}
-        <div />
+      {/* Top Row: Balance + Budget Tracker */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <TotalBalanceCard
+          accounts={accounts || []}
+          currency={currencySymbol}
+          previousMonthBalance={previousMonthBalance > 0 ? previousMonthBalance : undefined}
+          isLoading={isLoadingAccounts}
+        />
+        <EnhancedBudgetTracker
+          categories={budgetCategories}
+          currency={currencySymbol}
+          isLoading={isLoadingCurrentTransactions}
+        />
       </div>
+
+      {/* Spending Chart */}
+      <SpendingChart
+        transactions={currentMonthTransactions || []}
+        previousMonthTransactions={previousMonthTransactions || []}
+        currency={currencySymbol}
+        isLoading={isLoadingCurrentTransactions}
+      />
+
+      {/* Recent Activity */}
+      <RecentActivity
+        transactions={currentMonthTransactions || []}
+        categories={categories || []}
+        currency={currencySymbol}
+        limit={10}
+        isLoading={isLoadingCurrentTransactions}
+      />
 
       {/* Empty State CTA */}
       {!isLoadingAccounts && !hasAccounts && (

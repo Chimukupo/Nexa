@@ -2,7 +2,7 @@
 
 **Version:** 1.1  
 **Last Updated:** December 09, 2025  
-**Status:** Active Development (Phases 1-6 Complete, Phase 7 Pending)  
+**Status:** Active Development (Phases 1-7 Complete, Phase 8 Pending)  
 **Development Methodology:** Agile (Sprint-based)
 
 ---
@@ -537,44 +537,44 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 ### **Milestone 7.1: Savings Goals**
 
-- [ ] **Task 7.1.1:** Create savings goal schema
-  - [ ] Add SavingsGoal collection to Firestore schema
-  - [ ] Fields: name, targetAmount, targetDate, currentAmount, accountId
-  - [ ] Create Zod schema in `packages/validators`
-  - [ ] Create TypeScript types
+- [x] **Task 7.1.1:** Create savings goal schema
+  - [x] Add SavingsGoal collection to Firestore schema
+  - [x] Fields: name, targetAmount, targetDate, currentAmount, accountId
+  - [x] Create Zod schema in `packages/validators`
+  - [x] Create TypeScript types
 
-- [ ] **Task 7.1.2:** Create savings goal management hooks
-  - [ ] Create `lib/hooks/useSavingsGoals.ts` with TanStack Query
-  - [ ] Implement CRUD operations for savings goals
-  - [ ] Calculate monthly savings requirement
+- [x] **Task 7.1.2:** Create savings goal management hooks
+  - [x] Create `lib/hooks/useSavingsGoals.ts` with TanStack Query
+  - [x] Implement CRUD operations for savings goals
+  - [x] Calculate monthly savings requirement
 
-- [ ] **Task 7.1.3:** Create savings goal form
-  - [ ] Create `components/forms/SavingsGoalForm.tsx`
-  - [ ] Form fields: name, targetAmount, targetDate, accountId
-  - [ ] Calculate and display: "You need to save K500/month to reach this goal"
-  - [ ] Use React Hook Form with Zod validation
+- [x] **Task 7.1.3:** Create savings goal form
+  - [x] Create `components/forms/SavingsGoalForm.tsx`
+  - [x] Form fields: name, targetAmount, targetDate, accountId
+  - [x] Calculate and display: "You need to save K500/month to reach this goal"
+  - [x] Use React Hook Form with Zod validation
 
-- [ ] **Task 7.1.4:** Create savings goals page
-  - [ ] Create `app/(dashboard)/goals/page.tsx`
-  - [ ] Display list of savings goals
-  - [ ] Show progress toward each goal
-  - [ ] Display monthly savings requirement
-  - [ ] Add create, edit, delete actions
+- [x] **Task 7.1.4:** Create savings goals page
+  - [x] Create `app/(dashboard)/goals/page.tsx`
+  - [x] Display list of savings goals
+  - [x] Show progress toward each goal
+  - [x] Display monthly savings requirement
+  - [x] Add create, edit, delete actions
 
 ### **Milestone 7.2: Savings Allocation**
 
-- [ ] **Task 7.2.1:** Implement virtual savings transfer
-  - [ ] Create "Transfer to Goal" functionality
-  - [ ] Create transfer transaction (TRANSFER type)
-  - [ ] Update goal currentAmount
-  - [ ] Update account balance
-  - [ ] Show transfer confirmation
+- [x] **Task 7.2.1:** Implement virtual savings transfer
+  - [x] Create "Transfer to Goal" functionality
+  - [x] Create transfer transaction (TRANSFER type)
+  - [x] Update goal currentAmount
+  - [x] Update account balance
+  - [x] Show transfer confirmation
 
-- [ ] **Task 7.2.2:** Create savings goal widgets
-  - [ ] Create `components/widgets/SavingsGoalCard.tsx`
-  - [ ] Display goal name, target, current amount, progress percentage
-  - [ ] Show time remaining and monthly requirement
-  - [ ] Add progress visualization
+- [x] **Task 7.2.2:** Create savings goal widgets
+  - [x] Create `components/widgets/SavingsGoalCard.tsx`
+  - [x] Display goal name, target, current amount, progress percentage
+  - [x] Show time remaining and monthly requirement
+  - [x] Add progress visualization
 
 ---
 
