@@ -622,26 +622,26 @@ This roadmap outlines the development phases, milestones, and tasks for building
   - [x] Custom tooltip (floating white card)
   - [x] Display cumulative spending with time range selector
 
-- [ ] **Task 8.2.2:** Implement Expense Donut Chart
-  - [ ] Create `components/widgets/ExpenseDonutChart.tsx`
-  - [ ] Use Recharts PieChart component
-  - [ ] Display expenses by category
-  - [ ] Use category colors from database
-  - [ ] Show percentages and amounts
-  - [ ] Add legend
+- [x] **Task 8.2.2:** Implement Expense Donut Chart
+  - [x] Create `components/widgets/ExpenseDonutChart.tsx`
+  - [x] Use Recharts PieChart component
+  - [x] Display expenses by category
+  - [x] Use category colors from database
+  - [x] Show percentages and amounts
+  - [x] Add legend
 
-- [ ] **Task 8.2.3:** Implement Income vs Expense Line Graph
-  - [ ] Create `components/widgets/IncomeExpenseChart.tsx`
-  - [ ] Use Recharts LineChart component
-  - [ ] Display income and expense trends
-  - [ ] Show last 6 months
-  - [ ] Use green for income, red for expenses
-  - [ ] Add custom tooltip
+- [x] **Task 8.2.3:** Implement Income vs Expense Bar Chart
+  - [x] Create `components/widgets/IncomeExpenseChart.tsx`
+  - [x] Use Recharts BarChart component
+  - [x] Display income and expense trends (12 months)
+  - [x] Use green for income, red for expenses
+  - [x] Add custom tooltip with net savings
+  - [x] Show savings rate
 
 - [x] **Task 8.2.4:** Add charts to dashboard
   - [x] Integrate Spending Wave chart
-  - [ ] Integrate Expense Donut Chart
-  - [ ] Integrate Income vs Expense Line Graph
+  - [x] Integrate Expense Donut Chart
+  - [x] Integrate Income vs Expense Bar Chart
   - [x] Make charts responsive
   - [x] Add loading states
 

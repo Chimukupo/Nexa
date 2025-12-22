@@ -10,6 +10,7 @@ import { useCategories } from "@/lib/hooks/useCategories";
 import { useInitializeCategories } from "@/lib/hooks/useInitializeCategories";
 import { calculateNetWorth } from "@/lib/utils/netWorth";
 import { calculateMonthlyIncome, calculateMonthlyExpenses, getCurrentMonthRange, getPreviousMonthRange } from "@/lib/utils/monthlyCalculations";
+import { subMonths } from "date-fns";
 import { Wallet } from "lucide-react";
 import { Card, CardContent, CardDescription, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
@@ -19,6 +20,8 @@ import { TotalBalanceCard } from "@/components/widgets/TotalBalanceCard";
 import { EnhancedBudgetTracker } from "@/components/widgets/EnhancedBudgetTracker";
 import { SpendingChart } from "@/components/widgets/SpendingChart";
 import { RecentActivity } from "@/components/widgets/RecentActivity";
+import { ExpenseDonutChart } from "@/components/widgets/ExpenseDonutChart";
+import { IncomeExpenseChart } from "@/components/widgets/IncomeExpenseChart";
 
 export default function DashboardPage(): React.JSX.Element {
   const { user } = useAuth();
@@ -43,16 +46,12 @@ export default function DashboardPage(): React.JSX.Element {
     endDate: previousMonthRange.endDate,
   });
 
-  // Calculate monthly totals
-  const monthlyIncome = useMemo(
-    () => calculateMonthlyIncome(currentMonthTransactions || []),
-    [currentMonthTransactions]
-  );
-  
-  const monthlyExpenses = useMemo(
-    () => calculateMonthlyExpenses(currentMonthTransactions || []),
-    [currentMonthTransactions]
-  );
+  // Fetch last 12 months for income/expense chart
+  const last12MonthsStart = useMemo(() => subMonths(new Date(), 12), []);
+  const { data: yearTransactions } = useTransactions({
+    startDate: last12MonthsStart,
+    endDate: new Date(),
+  });
 
   const previousMonthBalance = useMemo(() => {
     const prevIncome = calculateMonthlyIncome(previousMonthTransactions || []);
@@ -97,7 +96,7 @@ export default function DashboardPage(): React.JSX.Element {
           Welcome back, {profile?.displayName || user?.displayName || "User"}!
         </h1>
         <p className="text-muted-foreground mt-1">
-          Here's what's happening with your finances today.
+          Here&apos;s what&apos;s happening with your finances today.
         </p>
       </div>
 
@@ -123,6 +122,21 @@ export default function DashboardPage(): React.JSX.Element {
         currency={currencySymbol}
         isLoading={isLoadingCurrentTransactions}
       />
+
+      {/* Charts Row: Expense Breakdown + Income vs Expense */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ExpenseDonutChart
+          transactions={currentMonthTransactions || []}
+          categories={categories || []}
+          currency={currencySymbol}
+          isLoading={isLoadingCurrentTransactions}
+        />
+        <IncomeExpenseChart
+          transactions={yearTransactions || []}
+          currency={currencySymbol}
+          isLoading={isLoadingCurrentTransactions}
+        />
+      </div>
 
       {/* Recent Activity */}
       <RecentActivity
