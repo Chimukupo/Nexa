@@ -202,17 +202,39 @@ export function useContributeToGoal(): UseMutationResult<
 }
 
 /**
+ * Helper to normalize date from various formats (Date, Timestamp, string, number)
+ */
+function normalizeDate(date: unknown): Date {
+  if (!date) return new Date();
+  
+  // Handle Firestore Timestamp
+  if (typeof date === "object" && date !== null && "toDate" in date && typeof (date as { toDate: () => Date }).toDate === "function") {
+    return (date as { toDate: () => Date }).toDate();
+  }
+  
+  // Handle Date object
+  if (date instanceof Date) {
+    return isNaN(date.getTime()) ? new Date() : date;
+  }
+  
+  // Handle string or number
+  const parsed = new Date(date as string | number);
+  return isNaN(parsed.getTime()) ? new Date() : parsed;
+}
+
+/**
  * Calculate monthly savings requirement to reach goal
  */
 export function calculateMonthlyRequirement(
   targetAmount: number,
   currentAmount: number,
-  targetDate: Date
+  targetDate: unknown
 ): number {
+  const normalizedDate = normalizeDate(targetDate);
   const remaining = targetAmount - currentAmount;
   if (remaining <= 0) return 0;
 
-  const monthsLeft = differenceInMonths(targetDate, new Date());
+  const monthsLeft = differenceInMonths(normalizedDate, new Date());
   
   if (monthsLeft <= 0) {
     // Goal is overdue or due this month - return full remaining amount
@@ -233,15 +255,16 @@ export function calculateProgress(currentAmount: number, targetAmount: number): 
 /**
  * Calculate time remaining until target date
  */
-export function calculateTimeRemaining(targetDate: Date): {
+export function calculateTimeRemaining(targetDate: unknown): {
   months: number;
   days: number;
   isOverdue: boolean;
   totalDays: number;
 } {
+  const normalizedDate = normalizeDate(targetDate);
   const today = new Date();
-  const months = differenceInMonths(targetDate, today);
-  const days = differenceInDays(targetDate, today);
+  const months = differenceInMonths(normalizedDate, today);
+  const days = differenceInDays(normalizedDate, today);
 
   return {
     months: Math.max(0, months),
@@ -257,3 +280,4 @@ export function calculateTimeRemaining(targetDate: Date): {
 export function isGoalAchieved(currentAmount: number, targetAmount: number): boolean {
   return currentAmount >= targetAmount;
 }
+

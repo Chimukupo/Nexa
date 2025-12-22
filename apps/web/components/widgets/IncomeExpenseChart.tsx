@@ -34,6 +34,20 @@ export function IncomeExpenseChart({
   currency = "K",
   isLoading = false,
 }: IncomeExpenseChartProps) {
+  // Helper to normalize Firestore Timestamps to Date
+  const normalizeDate = (date: unknown): Date => {
+    if (!date) return new Date();
+    // Handle Firestore Timestamp
+    if (typeof date === "object" && date !== null && "toDate" in date && typeof (date as { toDate: () => Date }).toDate === "function") {
+      return (date as { toDate: () => Date }).toDate();
+    }
+    if (date instanceof Date) {
+      return isNaN(date.getTime()) ? new Date() : date;
+    }
+    const parsed = new Date(date as string | number);
+    return isNaN(parsed.getTime()) ? new Date() : parsed;
+  };
+
   // Calculate monthly income and expenses for last 12 months
   const chartData = useMemo(() => {
     const months: {
@@ -51,7 +65,7 @@ export function IncomeExpenseChart({
 
       // Filter transactions for this month
       const monthTransactions = transactions.filter((t) => {
-        const txDate = new Date(t.date);
+        const txDate = normalizeDate(t.date);
         return txDate >= monthStart && txDate <= monthEnd;
       });
 

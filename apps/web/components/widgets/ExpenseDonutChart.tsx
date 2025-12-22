@@ -217,25 +217,31 @@ export function ExpenseDonutChart({
       <CardContent>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
+            <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
               <Pie
                 data={chartData}
                 cx="50%"
-                cy="50%"
+                cy="45%"
                 labelLine={false}
                 label={renderCustomLabel}
-                outerRadius={120}
-                innerRadius={70}
+                outerRadius={100}
+                innerRadius={60}
                 fill="#8884d8"
                 dataKey="value"
                 paddingAngle={2}
+                stroke="none"
+                activeShape={undefined}
               >
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={entry.color}
+                    stroke="none"
+                  />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
-              <Legend content={<CustomLegend />} />
+              <Legend content={<CustomLegend />} verticalAlign="bottom" />
             </PieChart>
           </ResponsiveContainer>
         </div>

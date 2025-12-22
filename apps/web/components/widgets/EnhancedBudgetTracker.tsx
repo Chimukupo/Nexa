@@ -99,23 +99,27 @@ export function EnhancedBudgetTracker({
               <DropdownMenuItem>Manage Budgets</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <div className="flex rounded-lg border bg-muted/50 p-1">
-            <Button
-              variant={viewMode === "totals" ? "secondary" : "ghost"}
-              size="sm"
-              className="h-7 px-3 text-xs"
+          <div className="flex gap-1 bg-muted/50 rounded-full p-1">
+            <button
+              className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors cursor-pointer ${
+                viewMode === "totals"
+                  ? "bg-blue-600 text-white"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
               onClick={() => setViewMode("totals")}
             >
               Totals
-            </Button>
-            <Button
-              variant={viewMode === "percent" ? "secondary" : "ghost"}
-              size="sm"
-              className="h-7 px-3 text-xs"
+            </button>
+            <button
+              className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors cursor-pointer ${
+                viewMode === "percent"
+                  ? "bg-blue-600 text-white"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
               onClick={() => setViewMode("percent")}
             >
               Percent
-            </Button>
+            </button>
           </div>
         </div>
       </CardHeader>

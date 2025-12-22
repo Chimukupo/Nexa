@@ -188,7 +188,7 @@ export function TotalBalanceCard({
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2">
-          <Button className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white">
+          <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
             <TrendingUp className="h-4 w-4 mr-2" />
             Send
           </Button>

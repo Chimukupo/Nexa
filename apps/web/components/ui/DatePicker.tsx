@@ -31,6 +31,23 @@ export function DatePicker({
   minDate,
   maxDate,
 }: DatePickerProps) {
+  // Validate and normalize the date
+  const validDate = React.useMemo(() => {
+    if (!date) return undefined;
+    // Handle Firestore Timestamp objects or invalid dates
+    const dateObj = date instanceof Date ? date : new Date(date);
+    return isNaN(dateObj.getTime()) ? undefined : dateObj;
+  }, [date]);
+
+  const formattedDate = React.useMemo(() => {
+    if (!validDate) return null;
+    try {
+      return format(validDate, "PPP");
+    } catch {
+      return null;
+    }
+  }, [validDate]);
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -38,19 +55,19 @@ export function DatePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "w-full justify-start text-left font-normal bg-card",
-            !date && "text-muted-foreground",
+            "w-full justify-start text-left font-normal bg-card cursor-pointer",
+            !validDate && "text-muted-foreground",
             className
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>{placeholder}</span>}
+          {formattedDate || <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0 bg-card" align="start">
         <Calendar
           mode="single"
-          selected={date}
+          selected={validDate}
           onSelect={onDateChange}
           disabled={(date) => {
             if (minDate && date < minDate) return true;
