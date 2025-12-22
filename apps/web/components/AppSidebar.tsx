@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Wallet, Receipt, Tags, Repeat, Settings, ChevronUp, User2, LogOut } from "lucide-react";
+import { Home, Wallet, Receipt, Tags, Repeat, PiggyBank, Target, Settings, ChevronUp, User2, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/contexts/AuthContext";
@@ -50,6 +50,16 @@ const menuItems = [
     title: "Recurring",
     url: "/recurring",
     icon: Repeat,
+  },
+  {
+    title: "Budget",
+    url: "/budget",
+    icon: PiggyBank,
+  },
+  {
+    title: "Goals",
+    url: "/goals",
+    icon: Target,
   },
   {
     title: "Settings",

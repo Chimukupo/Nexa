@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Plus, Pencil, Trash2, Power, PowerOff } from "lucide-react";
 import {
   useRecurringRules,
@@ -34,7 +34,7 @@ import {
 import { toast } from "sonner";
 import type { RecurringRule, RecurringRuleInput } from "@workspace/validators";
 
-export default function RecurringRulesPage() {
+export default function RecurringRulesPage(): React.JSX.Element {
   const [formState, setFormState] = useState<{
     mode: "create" | "edit";
     rule?: RecurringRule & { id: string };
