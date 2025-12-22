@@ -176,8 +176,8 @@ export function SpendingChart({
             <AreaChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
               <defs>
                 <linearGradient id="spendingGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#2563EB" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} />
@@ -211,12 +211,12 @@ export function SpendingChart({
               <Area
                 type="monotone"
                 dataKey="thisMonth"
-                stroke="#10B981"
+                stroke="#2563EB"
                 fill="url(#spendingGradient)"
                 strokeWidth={2}
                 name="This Month"
                 dot={false}
-                activeDot={{ r: 6, fill: '#10B981' }}
+                activeDot={{ r: 6, fill: '#2563EB' }}
               />
               <Line
                 type="monotone"
