@@ -1,8 +1,8 @@
 # **Project Roadmap: Nexa**
 
-**Version:** 1.1  
-**Last Updated:** December 09, 2025  
-**Status:** Active Development (Phases 1-7 Complete, Phase 8 Pending)  
+**Version:** 1.2  
+**Last Updated:** December 22, 2025  
+**Status:** Active Development (Phases 1-8 Complete, Phase 9 Pending)  
 **Development Methodology:** Agile (Sprint-based)
 
 ---
@@ -658,7 +658,36 @@ This roadmap outlines the development phases, milestones, and tasks for building
 - [x] **Task 8.3.2:** Add recent activity to dashboard
   - [x] Integrate RecentActivity component
   - [x] Add "View All" link to transactions page
-  - [ ] Add refresh functionality
+
+### **Milestone 8.4: UI Polish & Bug Fixes**
+
+- [x] **Task 8.4.1:** UI Consistency Updates
+  - [x] Add `cursor-pointer` to base Button component (applies app-wide)
+  - [x] Add gray background wrapper to tab switches for consistency
+  - [x] Update tab switch styling to match pill-style design
+  - [x] Change chart colors from emerald to app blue theme
+  - [x] Update Send button color to match app blue theme
+
+- [x] **Task 8.4.2:** Fix DatePicker Invalid Time Value Error
+  - [x] Add date validation in DatePicker component
+  - [x] Handle Firestore Timestamp objects
+  - [x] Handle invalid Date objects with fallback
+
+- [x] **Task 8.4.3:** Fix Savings Goal Card NaN Values
+  - [x] Create `normalizeDate()` helper function
+  - [x] Update `calculateMonthlyRequirement()` to accept any date format
+  - [x] Update `calculateTimeRemaining()` to handle Firestore Timestamps
+  - [x] Fix "Time Left" and "Per Month" display on goal cards
+
+- [x] **Task 8.4.4:** Fix Income vs Expenses Chart Data
+  - [x] Add `normalizeDate()` helper to IncomeExpenseChart
+  - [x] Fix date filtering logic for Firestore Timestamps
+  - [x] Properly group transactions by month for last 12 months
+
+- [x] **Task 8.4.5:** Fix Expense Donut Chart Issues
+  - [x] Adjust chart positioning to prevent top cutoff
+  - [x] Remove blue box highlight on click
+  - [x] Add proper margins and reduce outer radius
 
 ---
 
