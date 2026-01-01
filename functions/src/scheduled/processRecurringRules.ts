@@ -3,21 +3,25 @@ import * as admin from "firebase-admin";
 
 /**
  * Recurring Engine Cloud Function
- * 
+ *
  * Processes recurring rules and creates transactions automatically.
  * Runs daily at 00:00 UTC to check for rules that need to be executed.
- * 
+ *
  * Trigger: Scheduled function (Cloud Scheduler)
  */
 export const processRecurringRules = functions
   .runWith({maxInstances: 10})
   .pubsub.schedule("0 0 * * *") // Daily at 00:00 UTC
   .timeZone("UTC")
-  .onRun(async (context: functions.EventContext) => {
+  .onRun(async () => {
     const db = admin.firestore();
     const today = new Date();
     const currentDay = today.getDate();
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), currentDay);
+    const todayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      currentDay,
+    );
     todayStart.setHours(0, 0, 0, 0);
     const todayEnd = new Date(todayStart);
     todayEnd.setHours(23, 59, 59, 999);
@@ -48,9 +52,9 @@ export const processRecurringRules = functions
           totalProcessed++;
 
           // Check if rule was already run today
-          const lastRunDate = rule.lastRunDate
-            ? rule.lastRunDate.toDate()
-            : null;
+          const lastRunDate = rule.lastRunDate ?
+            rule.lastRunDate.toDate() :
+            null;
 
           if (
             lastRunDate &&
@@ -94,7 +98,8 @@ export const processRecurringRules = functions
       }
 
       functions.logger.info(
-        `Recurring engine completed: ${totalCreated} transactions created from ${totalProcessed} rules processed`,
+        `Recurring engine completed: ${totalCreated} transactions ` +
+        `created from ${totalProcessed} rules processed`,
       );
 
       return {
