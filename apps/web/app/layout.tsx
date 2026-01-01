@@ -1,19 +1,7 @@
-import { Geist, Geist_Mono } from "next/font/google"
-
 import "@workspace/ui/globals.css"
 import { Providers } from "@/components/providers"
 import { AuthProvider } from "@/lib/contexts/AuthContext"
 import { Toaster } from "@workspace/ui/components/sonner"
-
-const fontSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
 
 export default function RootLayout({
   children,
@@ -22,9 +10,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="font-sans antialiased">
         <Providers>
           <AuthProvider>{children}</AuthProvider>
         </Providers>
