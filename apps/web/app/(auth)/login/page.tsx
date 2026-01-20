@@ -22,7 +22,7 @@ export default function LoginPage() {
   const { signInWithEmail } = useAuth();
   const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -67,12 +67,16 @@ export default function LoginPage() {
   return (
     <div className="w-full max-w-md">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Welcome Back!</h1>
-        <p className="mt-2 text-gray-500">We Are Happy To See You Again</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Welcome Back!
+        </h1>
+        <p className="mt-2 text-gray-500 dark:text-gray-400">
+          We Are Happy To See You Again
+        </p>
       </div>
 
       {/* Tabs */}
-      <div className="mb-8 flex rounded-full bg-gray-100 p-1">
+      <div className="mb-8 flex rounded-full bg-gray-100 dark:bg-gray-800 p-1">
         <Link
           href="/login"
           className="flex-1 rounded-full bg-primary px-4 py-2 text-center text-sm font-medium text-white shadow-sm transition-all"
@@ -81,7 +85,7 @@ export default function LoginPage() {
         </Link>
         <Link
           href="/signup"
-          className="flex-1 rounded-full bg-transparent px-4 py-2 text-center text-sm font-medium text-gray-500 hover:text-gray-900 transition-all"
+          className="flex-1 rounded-full bg-transparent px-4 py-2 text-center text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all"
         >
           Sign Up
         </Link>
@@ -89,7 +93,7 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {errors.root && (
-          <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm">
+          <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
             {errors.root.message}
           </div>
         )}
@@ -97,33 +101,35 @@ export default function LoginPage() {
         {/* Email */}
         <div className="space-y-2">
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
             <input
               {...register("email")}
               type="email"
               placeholder="Enter your email"
-              className="w-full rounded-full border-0 bg-gray-50 py-4 pl-12 pr-4 text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+              className="w-full rounded-full border-0 bg-gray-50 dark:bg-gray-800 py-4 pl-12 pr-4 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-200 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
             />
           </div>
           {errors.email && (
-            <p className="text-sm text-red-600">{errors.email.message}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {errors.email.message}
+            </p>
           )}
         </div>
 
         {/* Password */}
         <div className="space-y-2">
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
             <input
               {...register("password")}
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              className="w-full rounded-full border-0 bg-gray-50 py-4 pl-12 pr-12 text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+              className="w-full rounded-full border-0 bg-gray-50 dark:bg-gray-800 py-4 pl-12 pr-12 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-200 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
             >
               {showPassword ? (
                 <EyeOff className="h-5 w-5" />
@@ -133,7 +139,9 @@ export default function LoginPage() {
             </button>
           </div>
           {errors.password && (
-            <p className="text-sm text-red-600">{errors.password.message}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {errors.password.message}
+            </p>
           )}
         </div>
 
@@ -143,7 +151,7 @@ export default function LoginPage() {
             name="rememberMe"
             control={control}
             render={({ field }) => (
-              <label className="flex items-center gap-2 text-sm text-gray-600">
+              <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <Checkbox
                   id="rememberMe"
                   checked={!!field.value}
@@ -157,7 +165,7 @@ export default function LoginPage() {
           />
           <Link
             href="/forgot-password"
-            className="text-sm font-medium text-primary hover:text-blue-600"
+            className="text-sm font-medium text-primary hover:text-blue-600 dark:hover:text-blue-400"
           >
             Forgot Password?
           </Link>
@@ -182,8 +190,6 @@ export default function LoginPage() {
           <span className="bg-white px-4 text-sm text-gray-500">OR</span>
         </div>
       </div> */}
-
     </div>
   );
 }
-

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Wallet } from "lucide-react";
 import {
@@ -35,7 +35,7 @@ type FormState =
   | { mode: "edit"; accountId: string }
   | null;
 
-export default function AccountsPage() {
+export default function AccountsPage(): React.JSX.Element {
   const router = useRouter();
   const { data: accounts, isLoading } = useAccounts();
   const createAccount = useCreateAccount();
