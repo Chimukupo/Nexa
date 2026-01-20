@@ -93,7 +93,7 @@ export default function DashboardPage(): React.JSX.Element {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          Welcome back, {profile?.displayName || user?.displayName || "User"}!
+          Welcome, {profile?.displayName || user?.displayName || "User"}!
         </h1>
         <p className="text-muted-foreground mt-1">
           Here&apos;s what&apos;s happening with your finances today.
