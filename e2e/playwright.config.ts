@@ -16,10 +16,13 @@ export default defineConfig({
   },
 
   webServer: {
-    command: 'cd apps/web && pnpm dev',
+    // Windows-compatible command
+    command: 'pnpm --filter web dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    stdout: 'pipe',
+    stderr: 'pipe',
   },
 
   projects: [
@@ -30,6 +33,10 @@ export default defineConfig({
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
     },
   ],
 });
