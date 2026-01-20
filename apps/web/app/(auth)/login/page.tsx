@@ -68,7 +68,7 @@ export default function LoginPage() {
     <div className="w-full max-w-md">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Welcome Back!
+          Welcome!
         </h1>
         <p className="mt-2 text-gray-500 dark:text-gray-400">
           We Are Happy To See You Again
