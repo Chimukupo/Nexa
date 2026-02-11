@@ -3,7 +3,7 @@ import { z } from "zod";
 /**
  * Shared enums
  */
-export const CurrencyEnum = z.enum(["ZMW", "USD", "GBP", "ZAR"]);
+export const CurrencyEnum = z.enum(["ZMW", "USD", "GBP", "ZAR", "EUR", "AED"]);
 export const FiscalProfileEnum = z.enum(["SALARIED", "FREELANCE"]);
 export const AccountTypeEnum = z.enum([
   "CASH",
@@ -211,6 +211,8 @@ const SavingsGoalBaseSchema = z.object({
   currentAmount: z.coerce.number().nonnegative().default(0),
   targetDate: z.coerce.date(),
   accountId: z.string().min(1),
+  description: z.string().max(500).optional(),
+  color: z.string().regex(hexColorRegex).optional(),
   status: SavingsGoalStatusEnum.default("ACTIVE"),
 });
 

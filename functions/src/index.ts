@@ -1,8 +1,8 @@
 /**
  * Firebase Cloud Functions Entry Point
- * 
+ *
  * Exports all Cloud Functions for deployment.
- * 
+ *
  * Functions are organized into:
  * - triggers/: Firestore event triggers
  * - scheduled/: Scheduled functions (cron jobs)
