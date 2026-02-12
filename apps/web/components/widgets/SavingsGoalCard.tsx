@@ -38,12 +38,12 @@ export function SavingsGoalCard({
   );
 
   const monthlyReq = useMemo(
-    () => calculateMonthlyRequirement(goal.targetAmount, goal.currentAmount, new Date(goal.targetDate)),
+    () => calculateMonthlyRequirement(goal.targetAmount, goal.currentAmount, goal.targetDate),
     [goal.targetAmount, goal.currentAmount, goal.targetDate]
   );
 
   const timeRemaining = useMemo(
-    () => calculateTimeRemaining(new Date(goal.targetDate)),
+    () => calculateTimeRemaining(goal.targetDate),
     [goal.targetDate]
   );
 
@@ -171,7 +171,7 @@ export function SavingsGoalCard({
         {onContribute && !achieved && (
           <Button
             onClick={() => onContribute(goal.id)}
-            className="w-full"
+            className="w-full cursor-pointer"
             size="sm"
           >
             Contribute to Goal

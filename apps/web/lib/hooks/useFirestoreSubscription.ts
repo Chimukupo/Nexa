@@ -33,7 +33,9 @@ export function useFirestoreSubscription<T extends DocumentData>(
     }
 
     // Determine if path is a collection or document based on number of segments
-    const isCollection = path.split("/").length % 2 === 0;
+    // Collections have odd number of segments (e.g., "users/uid/goals" = 3)
+    // Documents have even number of segments (e.g., "users/uid" = 2)
+    const isCollection = path.split("/").length % 2 === 1;
 
     if (isCollection) {
       const collectionRef = collection(db, path);

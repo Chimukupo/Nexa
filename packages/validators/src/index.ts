@@ -3,7 +3,7 @@ import { z } from "zod";
 /**
  * Shared enums
  */
-export const CurrencyEnum = z.enum(["ZMW", "USD", "GBP", "ZAR"]);
+export const CurrencyEnum = z.enum(["ZMW", "USD", "GBP", "ZAR", "EUR", "AED"]);
 export const FiscalProfileEnum = z.enum(["SALARIED", "FREELANCE"]);
 export const AccountTypeEnum = z.enum([
   "CASH",

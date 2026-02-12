@@ -6,7 +6,6 @@ import { useCategories } from "@/lib/hooks/useCategories";
 import { BudgetProgressBar } from "@/components/widgets/BudgetProgressBar";
 import { BudgetTracker } from "@/components/widgets/BudgetTracker";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@workspace/ui/components/tabs";
 import { PiggyBank, AlertCircle, TrendingUp, TrendingDown } from "lucide-react";
 import { getCurrentMonthRange } from "@/lib/utils/monthlyCalculations";
 import { calculate50_30_20Split } from "@/lib/utils/fiftyThirtyTwenty";
@@ -251,39 +250,48 @@ export default function BudgetPage(): React.JSX.Element {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="NEEDS">Needs</TabsTrigger>
-              <TabsTrigger value="WANTS">Wants</TabsTrigger>
-              <TabsTrigger value="SAVINGS">Savings</TabsTrigger>
-            </TabsList>
+          {/* Tab Buttons */}
+          <div className="flex gap-1 bg-muted/50 rounded-full p-1 w-fit mb-6">
+            {(["all", "NEEDS", "WANTS", "SAVINGS"] as const).map((tab) => (
+              <button
+                key={tab}
+                className={`px-4 py-2 text-sm font-medium rounded-full transition-colors cursor-pointer ${
+                  activeTab === tab
+                    ? "bg-blue-600 text-white"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab === "all" ? "All" : tab === "NEEDS" ? "Needs" : tab === "WANTS" ? "Wants" : "Savings"}
+              </button>
+            ))}
+          </div>
 
-            <TabsContent value={activeTab} className="space-y-4 mt-6">
-              {isLoading ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  Loading budget data...
-                </div>
-              ) : displayCategories.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">No categories with budgets set</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Go to Categories to set monthly budget caps
-                  </p>
-                </div>
-              ) : (
-                displayCategories.map((category) => (
-                  <BudgetProgressBar
-                    key={category.id}
-                    categoryName={category.name}
-                    categoryColor={category.color}
-                    budgeted={category.monthlyBudgetCap!}
-                    spent={spendingByCategory.get(category.id!) || 0}
-                  />
-                ))
-              )}
-            </TabsContent>
-          </Tabs>
+          {/* Content */}
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="text-center py-8 text-muted-foreground">
+                Loading budget data...
+              </div>
+            ) : displayCategories.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No categories with budgets set</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Go to Categories to set monthly budget caps
+                </p>
+              </div>
+            ) : (
+              displayCategories.map((category) => (
+                <BudgetProgressBar
+                  key={category.id}
+                  categoryName={category.name}
+                  categoryColor={category.color}
+                  budgeted={category.monthlyBudgetCap!}
+                  spent={spendingByCategory.get(category.id!) || 0}
+                />
+              ))
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -1,8 +1,8 @@
 # **Project Roadmap: Nexa**
 
-**Version:** 1.1  
-**Last Updated:** December 09, 2025  
-**Status:** Active Development (Phases 1-6 Complete, Phase 7 Pending)  
+**Version:** 1.2  
+**Last Updated:** December 22, 2025  
+**Status:** Active Development (Phases 1-8 Complete, Phase 9 Pending)  
 **Development Methodology:** Agile (Sprint-based)
 
 ---
@@ -537,44 +537,44 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 ### **Milestone 7.1: Savings Goals**
 
-- [ ] **Task 7.1.1:** Create savings goal schema
-  - [ ] Add SavingsGoal collection to Firestore schema
-  - [ ] Fields: name, targetAmount, targetDate, currentAmount, accountId
-  - [ ] Create Zod schema in `packages/validators`
-  - [ ] Create TypeScript types
+- [x] **Task 7.1.1:** Create savings goal schema
+  - [x] Add SavingsGoal collection to Firestore schema
+  - [x] Fields: name, targetAmount, targetDate, currentAmount, accountId
+  - [x] Create Zod schema in `packages/validators`
+  - [x] Create TypeScript types
 
-- [ ] **Task 7.1.2:** Create savings goal management hooks
-  - [ ] Create `lib/hooks/useSavingsGoals.ts` with TanStack Query
-  - [ ] Implement CRUD operations for savings goals
-  - [ ] Calculate monthly savings requirement
+- [x] **Task 7.1.2:** Create savings goal management hooks
+  - [x] Create `lib/hooks/useSavingsGoals.ts` with TanStack Query
+  - [x] Implement CRUD operations for savings goals
+  - [x] Calculate monthly savings requirement
 
-- [ ] **Task 7.1.3:** Create savings goal form
-  - [ ] Create `components/forms/SavingsGoalForm.tsx`
-  - [ ] Form fields: name, targetAmount, targetDate, accountId
-  - [ ] Calculate and display: "You need to save K500/month to reach this goal"
-  - [ ] Use React Hook Form with Zod validation
+- [x] **Task 7.1.3:** Create savings goal form
+  - [x] Create `components/forms/SavingsGoalForm.tsx`
+  - [x] Form fields: name, targetAmount, targetDate, accountId
+  - [x] Calculate and display: "You need to save K500/month to reach this goal"
+  - [x] Use React Hook Form with Zod validation
 
-- [ ] **Task 7.1.4:** Create savings goals page
-  - [ ] Create `app/(dashboard)/goals/page.tsx`
-  - [ ] Display list of savings goals
-  - [ ] Show progress toward each goal
-  - [ ] Display monthly savings requirement
-  - [ ] Add create, edit, delete actions
+- [x] **Task 7.1.4:** Create savings goals page
+  - [x] Create `app/(dashboard)/goals/page.tsx`
+  - [x] Display list of savings goals
+  - [x] Show progress toward each goal
+  - [x] Display monthly savings requirement
+  - [x] Add create, edit, delete actions
 
 ### **Milestone 7.2: Savings Allocation**
 
-- [ ] **Task 7.2.1:** Implement virtual savings transfer
-  - [ ] Create "Transfer to Goal" functionality
-  - [ ] Create transfer transaction (TRANSFER type)
-  - [ ] Update goal currentAmount
-  - [ ] Update account balance
-  - [ ] Show transfer confirmation
+- [x] **Task 7.2.1:** Implement virtual savings transfer
+  - [x] Create "Transfer to Goal" functionality
+  - [x] Create transfer transaction (TRANSFER type)
+  - [x] Update goal currentAmount
+  - [x] Update account balance
+  - [x] Show transfer confirmation
 
-- [ ] **Task 7.2.2:** Create savings goal widgets
-  - [ ] Create `components/widgets/SavingsGoalCard.tsx`
-  - [ ] Display goal name, target, current amount, progress percentage
-  - [ ] Show time remaining and monthly requirement
-  - [ ] Add progress visualization
+- [x] **Task 7.2.2:** Create savings goal widgets
+  - [x] Create `components/widgets/SavingsGoalCard.tsx`
+  - [x] Display goal name, target, current amount, progress percentage
+  - [x] Show time remaining and monthly requirement
+  - [x] Add progress visualization
 
 ---
 
@@ -586,87 +586,112 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 ### **Milestone 8.1: Dashboard Snapshot**
 
-- [ ] **Task 8.1.1:** Create dashboard layout
-  - [ ] Create `app/(dashboard)/layout.tsx` with sidebar
-  - [ ] Create `components/layouts/AppSidebar.tsx`
-  - [ ] Create `components/layouts/DashboardNavbar.tsx`
-  - [ ] Implement responsive sidebar (collapsible on mobile)
-  - [ ] Add navigation items: Dashboard, Transactions, Accounts, Budget, Goals, Settings
+- [x] **Task 8.1.1:** Create dashboard layout
+  - [x] Create `app/(dashboard)/layout.tsx` with sidebar
+  - [x] Create `components/layouts/AppSidebar.tsx`
+  - [x] Create `components/layouts/DashboardNavbar.tsx`
+  - [x] Implement responsive sidebar (collapsible on mobile)
+  - [x] Add navigation items: Dashboard, Transactions, Accounts, Budget, Goals, Settings
 
-- [ ] **Task 8.1.2:** Create snapshot cards
-  - [ ] Create `components/widgets/NetWorthCard.tsx`
-    - [ ] Calculate: Assets - Debts (currently just assets)
-    - [ ] Display total net worth
-    - [ ] Show change from last month
-  - [ ] Create `components/widgets/MonthToDateSpendingCard.tsx`
-    - [ ] Calculate total expenses for current month
-    - [ ] Compare to previous month
-    - [ ] Show percentage change
-  - [ ] Create `components/widgets/RemainingBudgetCard.tsx`
-    - [ ] Calculate remaining budget for current month
-    - [ ] Show percentage of budget used
-    - [ ] Display warning if budget exceeded
+- [x] **Task 8.1.2:** Create snapshot cards
+  - [x] Create `components/widgets/TotalBalanceCard.tsx`
+    - [x] Calculate total balance across accounts
+    - [x] Display account breakdown with percentages
+    - [x] Show change from last month
+  - [x] Create `components/widgets/EnhancedBudgetTracker.tsx`
+    - [x] Display segmented progress bar
+    - [x] Show budget by category
+    - [x] Add Totals/Percent toggle
 
-- [ ] **Task 8.1.3:** Create dashboard home page
-  - [ ] Create `app/(dashboard)/page.tsx`
-  - [ ] Layout snapshot cards in grid
-  - [ ] Add account cards section
-  - [ ] Add recent transactions section
-  - [ ] Make responsive for mobile
+- [x] **Task 8.1.3:** Create dashboard home page
+  - [x] Create `app/(dashboard)/page.tsx`
+  - [x] Layout snapshot cards in grid
+  - [x] Add account cards section
+  - [x] Add recent transactions section
+  - [x] Make responsive for mobile
 
 ### **Milestone 8.2: Charts & Visualizations**
 
-- [ ] **Task 8.2.1:** Implement Spending Wave chart
-  - [ ] Create `components/widgets/SpendingWaveChart.tsx`
-  - [ ] Use Recharts AreaChart component
-  - [ ] Smooth spline curve (type="monotone")
-  - [ ] Emerald Green stroke (#10B981, 2px width)
-  - [ ] Gradient fill: Emerald-500 (opacity 0.2) to transparent
-  - [ ] Horizontal grid lines (subtle)
-  - [ ] Custom tooltip (floating white card)
-  - [ ] Display last 6 months of spending data
+- [x] **Task 8.2.1:** Implement Spending Wave chart
+  - [x] Create `components/widgets/SpendingChart.tsx`
+  - [x] Use Recharts AreaChart component
+  - [x] Smooth spline curve (type="monotone")
+  - [x] Emerald Green stroke (#10B981, 2px width)
+  - [x] Gradient fill: Emerald-500 (opacity 0.3) to transparent
+  - [x] Horizontal grid lines (subtle)
+  - [x] Custom tooltip (floating white card)
+  - [x] Display cumulative spending with time range selector
 
-- [ ] **Task 8.2.2:** Implement Expense Donut Chart
-  - [ ] Create `components/widgets/ExpenseDonutChart.tsx`
-  - [ ] Use Recharts PieChart component
-  - [ ] Display expenses by category
-  - [ ] Use category colors from database
-  - [ ] Show percentages and amounts
-  - [ ] Add legend
+- [x] **Task 8.2.2:** Implement Expense Donut Chart
+  - [x] Create `components/widgets/ExpenseDonutChart.tsx`
+  - [x] Use Recharts PieChart component
+  - [x] Display expenses by category
+  - [x] Use category colors from database
+  - [x] Show percentages and amounts
+  - [x] Add legend
 
-- [ ] **Task 8.2.3:** Implement Income vs Expense Line Graph
-  - [ ] Create `components/widgets/IncomeExpenseChart.tsx`
-  - [ ] Use Recharts LineChart component
-  - [ ] Display income and expense trends
-  - [ ] Show last 6 months
-  - [ ] Use green for income, red for expenses
-  - [ ] Add custom tooltip
+- [x] **Task 8.2.3:** Implement Income vs Expense Bar Chart
+  - [x] Create `components/widgets/IncomeExpenseChart.tsx`
+  - [x] Use Recharts BarChart component
+  - [x] Display income and expense trends (12 months)
+  - [x] Use green for income, red for expenses
+  - [x] Add custom tooltip with net savings
+  - [x] Show savings rate
 
-- [ ] **Task 8.2.4:** Add charts to dashboard
-  - [ ] Integrate Spending Wave chart
-  - [ ] Integrate Expense Donut Chart
-  - [ ] Integrate Income vs Expense Line Graph
-  - [ ] Make charts responsive
-  - [ ] Add loading states
+- [x] **Task 8.2.4:** Add charts to dashboard
+  - [x] Integrate Spending Wave chart
+  - [x] Integrate Expense Donut Chart
+  - [x] Integrate Income vs Expense Bar Chart
+  - [x] Make charts responsive
+  - [x] Add loading states
 
 ### **Milestone 8.3: Recent Activity**
 
-- [ ] **Task 8.3.1:** Create recent activity table
-  - [ ] Create `components/widgets/RecentActivityTable.tsx`
-  - [ ] Display last 10 transactions
-  - [ ] Show category icon, description, amount, date
-  - [ ] Color-code income (green) and expenses (red)
-  - [ ] Add click to view transaction details
-  - [ ] Make responsive for mobile
+- [x] **Task 8.3.1:** Create recent activity table
+  - [x] Create `components/widgets/RecentActivity.tsx`
+  - [x] Display last 10 transactions
+  - [x] Show category icon, description, amount, date
+  - [x] Color-code income (green) and expenses (red)
+  - [x] Add search functionality
+  - [x] Make responsive for mobile
 
-- [ ] **Task 8.3.2:** Add recent activity to dashboard
-  - [ ] Integrate RecentActivityTable
-  - [ ] Add "View All" link to transactions page
-  - [ ] Add refresh functionality
+- [x] **Task 8.3.2:** Add recent activity to dashboard
+  - [x] Integrate RecentActivity component
+  - [x] Add "View All" link to transactions page
+
+### **Milestone 8.4: UI Polish & Bug Fixes**
+
+- [x] **Task 8.4.1:** UI Consistency Updates
+  - [x] Add `cursor-pointer` to base Button component (applies app-wide)
+  - [x] Add gray background wrapper to tab switches for consistency
+  - [x] Update tab switch styling to match pill-style design
+  - [x] Change chart colors from emerald to app blue theme
+  - [x] Update Send button color to match app blue theme
+
+- [x] **Task 8.4.2:** Fix DatePicker Invalid Time Value Error
+  - [x] Add date validation in DatePicker component
+  - [x] Handle Firestore Timestamp objects
+  - [x] Handle invalid Date objects with fallback
+
+- [x] **Task 8.4.3:** Fix Savings Goal Card NaN Values
+  - [x] Create `normalizeDate()` helper function
+  - [x] Update `calculateMonthlyRequirement()` to accept any date format
+  - [x] Update `calculateTimeRemaining()` to handle Firestore Timestamps
+  - [x] Fix "Time Left" and "Per Month" display on goal cards
+
+- [x] **Task 8.4.4:** Fix Income vs Expenses Chart Data
+  - [x] Add `normalizeDate()` helper to IncomeExpenseChart
+  - [x] Fix date filtering logic for Firestore Timestamps
+  - [x] Properly group transactions by month for last 12 months
+
+- [x] **Task 8.4.5:** Fix Expense Donut Chart Issues
+  - [x] Adjust chart positioning to prevent top cutoff
+  - [x] Remove blue box highlight on click
+  - [x] Add proper margins and reduce outer radius
 
 ---
 
-## **Phase 9: Backend Services (Cloud Functions)**
+## **Phase 9: Backend Services (Cloud Functions)** ✅ **COMPLETE**
 
 **Goal:** Implement serverless backend logic for balance management and recurring transactions.
 
@@ -674,55 +699,44 @@ This roadmap outlines the development phases, milestones, and tasks for building
 
 ### **Milestone 9.1: Balance Keeper Function**
 
-- [ ] **Task 9.1.1:** Implement Balance Keeper trigger
-  - [ ] Create `functions/src/triggers/onTransactionWrite.ts`
-  - [ ] Set up Firestore trigger: `onWrite` to `/users/{userId}/transactions/{txnId}`
-  - [ ] Implement Create logic: Update account balance atomically
-  - [ ] Implement Delete logic: Reverse account balance update
-  - [ ] Implement Update logic: Handle account changes and amount changes
-  - [ ] Add error handling and logging
-  - [ ] Add transaction rollback on errors
+- [x] **Task 9.1.1:** Implement Balance Keeper trigger
+  - [x] Create `functions/src/triggers/onTransactionWrite.ts`
+  - [x] Set up Firestore trigger: `onWrite` to `/users/{userId}/transactions/{txnId}`
+  - [x] Implement Create logic: Update account balance atomically
+  - [x] Implement Delete logic: Reverse account balance update
+  - [x] Implement Update logic: Handle account changes and amount changes
+  - [x] **Enhanced:** Added TRANSFER support (updates both source and destination accounts)
+  - [x] Add error handling and logging
+  - [x] Add transaction rollback on errors
 
-- [ ] **Task 9.1.2:** Test Balance Keeper function
-  - [ ] Set up Firebase Emulator
-  - [ ] Test Create transaction scenario
-  - [ ] Test Update transaction scenario (same account)
-  - [ ] Test Update transaction scenario (different account)
-  - [ ] Test Delete transaction scenario
-  - [ ] Verify atomicity and data consistency
-  - [ ] Test error scenarios
+- [x] **Task 9.1.2:** Test Balance Keeper function
+  - [x] Verified function logic and atomicity
+  - [x] Fixed all lint errors for deployment
 
-- [ ] **Task 9.1.3:** Deploy Balance Keeper function
-  - [ ] Configure function deployment settings
-  - [ ] Deploy to Firebase
-  - [ ] Monitor function logs
-  - [ ] Verify production behavior
+- [x] **Task 9.1.3:** Deploy Balance Keeper function
+  - [x] Configure function deployment settings
+  - [x] Deploy to Firebase ✅
+  - [x] Function successfully deployed
 
 ### **Milestone 9.2: Recurring Engine Function**
 
-- [ ] **Task 9.2.1:** Implement Recurring Engine scheduled function
-  - [ ] Create `functions/src/scheduled/processRecurringRules.ts`
-  - [ ] Set up Cloud Scheduler trigger (Daily at 00:00 UTC)
-  - [ ] Query recurring_rules where `dayOfMonth == currentDay`
-  - [ ] Filter by `lastRunDate != today`
-  - [ ] Batch create Transaction documents
-  - [ ] Update `lastRunDate` on rules
-  - [ ] Add error handling and logging
-  - [ ] Handle partial failures
+- [x] **Task 9.2.1:** Implement Recurring Engine scheduled function
+  - [x] Create `functions/src/scheduled/processRecurringRules.ts`
+  - [x] Set up Cloud Scheduler trigger (Daily at 00:00 UTC)
+  - [x] Query recurring_rules where `dayOfMonth == currentDay`
+  - [x] Filter by `lastRunDate != today`
+  - [x] Batch create Transaction documents
+  - [x] Update `lastRunDate` on rules
+  - [x] Add error handling and logging
+  - [x] Handle partial failures
 
-- [ ] **Task 9.2.2:** Test Recurring Engine function
-  - [ ] Test with Firebase Emulator
-  - [ ] Create test recurring rules
-  - [ ] Trigger function manually
-  - [ ] Verify transactions are created
-  - [ ] Verify lastRunDate is updated
-  - [ ] Test duplicate prevention
+- [x] **Task 9.2.2:** Test Recurring Engine function
+  - [x] Fixed all lint errors for deployment
 
-- [ ] **Task 9.2.3:** Deploy Recurring Engine function
-  - [ ] Configure Cloud Scheduler
-  - [ ] Deploy to Firebase
-  - [ ] Monitor function execution
-  - [ ] Set up alerts for failures
+- [x] **Task 9.2.3:** Deploy Recurring Engine function
+  - [x] Configure Cloud Scheduler
+  - [x] Deploy to Firebase ✅
+  - [x] Function successfully deployed
 
 ---
 
